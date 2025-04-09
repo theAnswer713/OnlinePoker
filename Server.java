@@ -19,4 +19,28 @@ public class Server {
         acceptThread.start();
         acceptThread.join();
     }
+
+    private class AcceptThread implements Runnable {
+        public void run() {
+            try {
+                while(!server.isClosed()) {
+
+                }
+            }
+            catch(Exception err) {
+                err.printStackTrace();
+            }
+        }
+    }
+
+    private class ListenThread implements Runnable {
+        public void run() {
+            try {
+
+            }
+            catch(Exception err) {
+
+            }
+        }
+    }
 }
