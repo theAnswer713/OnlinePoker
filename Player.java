@@ -5,7 +5,6 @@ public class Player {
     private ArrayList<Card> hole;
     private ArrayList<Card> hand;
     private ArrayList<Card> used;
-    Scanner scan = new Scanner(System.in);
     
     public Player(String name) {
         this.name = name;
@@ -20,6 +19,14 @@ public class Player {
 
     public ArrayList<Card> getHand() {
         return hand;
+    }
+
+    public ArrayList<Card> getUsed() {
+        return used;
+    }
+
+    public ArrayList<Card> getHole() {
+        return hole;
     }
     
     public ArrayList<Card> sortHand() {
