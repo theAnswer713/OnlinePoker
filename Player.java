@@ -5,12 +5,14 @@ public class Player {
     private ArrayList<Card> hole;
     private ArrayList<Card> hand;
     private ArrayList<Card> used;
+    private ArrayList<Chip> money;
     
-    public Player(String name) {
+    public Player(String name, ArrayList<Chip> money) {
         this.name = name;
         this.hand = new ArrayList<Card>();
         this.used = new ArrayList<Card>();
         this.hole = new ArrayList<Card>();
+        this.money = money;
     }
     
     public String getName() {
@@ -27,6 +29,10 @@ public class Player {
 
     public ArrayList<Card> getHole() {
         return hole;
+    }
+
+    public ArrayList<Chip> getMoney() {
+        return money;
     }
     
     public ArrayList<Card> sortHand() {
