@@ -6,8 +6,8 @@ public class Deck {
         deck = new Stack<Card>();
         for (int s=0; s<4; s++) {
             String suit = "";
-            if(s==0) {suit="♥";} 
-            if(s==1) {suit="♦";}            
+            if(s==0) {suit="♥";}
+            if(s==1) {suit="♦";}
             if(s==2) {suit="♣";}
             if(s==3) {suit="♠";}
             for (int v=2; v<=14; v++) {
@@ -15,15 +15,15 @@ public class Deck {
             }
         }
     }
-    
+
     public Stack<Card> getDeck() {
         return deck;
     }
-    
+
     public Card dealCard() {
         return deck.pop();
     }
-    
+
     public void Shuffle() {
         Random rand = new Random();
         Stack<Card> left = new Stack<Card>();

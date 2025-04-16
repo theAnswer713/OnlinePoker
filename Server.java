@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 
 public class Server {
     private ServerSocket server;
-    private Set<PlayerData> playerSet;
+    private Set<Player> playerSet;
 
     public static void main(String[] args) throws Exception {
         new Server();
@@ -15,7 +15,7 @@ public class Server {
 
     public Server() throws Exception {
         this.server = new ServerSocket(55555);
-        this.playerSet = new LinkedHashSet<PlayerData>();
+        this.playerSet = new LinkedHashSet<Player>();
 
         Thread acceptThread = new Thread(new AcceptThread());
         acceptThread.start();
@@ -30,19 +30,20 @@ public class Server {
                         System.out.println("Waiting for players to join...");
                         Socket socket = server.accept();
                         BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        String username = br.readLine();
-                        PlayerData pd = new PlayerData(socket,username);
-                        playerSet.add(pd);
+                        String name = br.readLine();
+                        Player player = new Player(name, socket);
+                        playerSet.add(player);
 
-                        Thread listenThread = new Thread(new ListenThread(pd));
+                        Thread listenThread = new Thread(new ListenThread(player));
                         listenThread.start();
 
-                        String message = "JOIN:"+username;
+                        String message = "JOIN:"+name;
                         System.out.println(message);
-                        for(PlayerData x:playerSet) {
+                        for(Player x:playerSet) {
                             x.getPw().println(message);
                         }
                     }
+                    System.out.println("All players have joined!");
                 }
             }
             catch(Exception err) {
@@ -52,16 +53,16 @@ public class Server {
     }
 
     private class ListenThread implements Runnable {
-        private PlayerData pd;
+        private Player player;
 
-        public ListenThread(PlayerData pd) {
-            this.pd = pd;
+        public ListenThread(Player player) {
+            this.player = player;
         }
 
         public void run() {
             try {
-                while(!pd.getSocket().isClosed()) {
-                    String message = pd.getBr().readLine();
+                while(!player.getSocket().isClosed()) {
+                    String message = player.getBr().readLine();
                 }
             }
             catch(Exception err) {
