@@ -63,6 +63,10 @@ public class Server {
             try {
                 while(!player.getSocket().isClosed()) {
                     String message = player.getBr().readLine();
+                    System.out.println(message);
+                    for(Player x:playerSet) {
+                        x.getPw().println(message);
+                    }
                 }
             }
             catch(Exception err) {
