@@ -70,7 +70,7 @@ public class Server {
                 }
             }
             catch(Exception err) {
-
+                err.printStackTrace();
             }
         }
     }
