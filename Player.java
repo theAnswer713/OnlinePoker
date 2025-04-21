@@ -11,7 +11,7 @@ public class Player {
     private ArrayList<Card> hand;
     private ArrayList<Card> used;
     private int money;
-    private boolean folded
+    private boolean folded;
 
     private Socket socket;
     private BufferedReader br;
