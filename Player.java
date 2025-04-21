@@ -10,7 +10,8 @@ public class Player {
     private ArrayList<Card> hole;
     private ArrayList<Card> hand;
     private ArrayList<Card> used;
-    private ArrayList<Chip> money;
+    private int money;
+    private boolean folded
 
     private Socket socket;
     private BufferedReader br;
@@ -21,7 +22,8 @@ public class Player {
         this.hand = new ArrayList<Card>();
         this.used = new ArrayList<Card>();
         this.hole = new ArrayList<Card>();
-        this.money = new ArrayList<Chip>();
+        this.money = 0;
+        this.folded = false;
 
         try {
             this.socket = socket;
@@ -51,8 +53,11 @@ public class Player {
         return hole;
     }
 
-    public ArrayList<Chip> getMoney() {
+    public int getMoney() {
         return money;
+    }
+    public boolean isFolded() {
+        return folded;
     }
     public Socket getSocket() {
         return socket;
