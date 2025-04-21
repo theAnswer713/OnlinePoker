@@ -33,7 +33,7 @@ public class Game {
         while(match==false) {
             for(int i=0; i<players.size(); i++) {
                 if(players.get(i).isFolded()==false) {
-                    
+                    //bet or fold or smth i suppose
                 }
             }
             match = true;
@@ -76,33 +76,10 @@ public class Game {
     
     //compare
     public void compare() {
-        winners.add(players.get(0));
-        for(int i=1; i<players.size(); i++) {
-            if(players.get(i).handValue()==winners.get(0).handValue() && players.get(i).isFolded()==false) {
-                winners.add(players.get(i));
-            }
-            else if(players.get(i).handValue()>winners.get(0).handValue()) {
-                while(winners.size()>0) {
-                    winners.remove(0);
-                }
-                winners.add(players.get(i));
-            }
-        }
-        if(winners.size()>1) {
-            for(int i=0; i<5; i++) {
-                for(int j=0; j<winners.size(); j++) {
-                    if(winners.size()==1) {
-                        break;
-                    }
-                    else if(winners.get(j).getUsed().get(i).getValue() > winners.get(j+1).getUsed().get(i).getValue()){
-                        winners.remove(j+1);
-                        j--;
-                    }
-                    else if(winners.get(j).getUsed().get(i).getValue() < winners.get(j+1).getUsed().get(i).getValue()) {
-                        winners.remove(j);
-                        j--;
-                    }
-                }
+        TreeMap<String, Integer> hands = new TreeMap();
+        for(int i=0; i<players.size(); i++) {
+            if(players.get(i).isFolded()==false) {
+                hands.put(players.get(i).getName(), players.get(i).handValue());
             }
         }
     }
