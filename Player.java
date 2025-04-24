@@ -56,6 +56,9 @@ public class Player {
     public int getMoney() {
         return money;
     }
+    public void setMoney(int m) {
+        this.money = m;
+    }
     public boolean isFolded() {
         return folded;
     }
