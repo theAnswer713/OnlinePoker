@@ -90,28 +90,70 @@ public class Game {
             }
         }
     }
-    public String bestHand() {
+    public ArrayList<String> bestHand() {
         int best = 0;
-        String bestName = new String("");
+        ArrayList<String> bestName = new ArrayList<String>();
         for(int i=0; i<players.size(); i++) {
             if(hands.get(players.get(i).getName()) > best) {
                 best = hands.get(players.get(i).getName());
-                bestName = players.get(i).getName();
+                bestName.add(players.get(i).getName());
             }
             else if(hands.get(players.get(i).getName()) == best) {
-                bestName = bestName+" and "+players.get(i).getName();
+                bestName.add(players.get(i).getName());
             }
         }
         return bestName;
     }
+    public ArrayList<String> sortBest() {
+        ArrayList<String> bestHand = new ArrayList<String>(this.bestHand());
+        for(int j=0; j<bestHand.size()+1; j++) {    
+            for(int i=1; i<bestHand.size(); i++) {
+                if(bets.get(bestHand.get(i)) < bets.get(bestHand.get(i-1))) {
+                    bestHand.add(i-1, bestHand.remove(i));
+                }
+            }
+        }
+        return bestHand;
+    }
     //money to winner
     public void distribute() {
-        int remainder = 0;
+        ArrayList<String> bestHand = new ArrayList<String>();
         while(pot>0) {
-            String bestName = this.bestHand();
-            
-            for(int i=0; i<players.size(); i++) {
-                int temp = Math.min(bets.get(players.get(i).getName()), 
+            bestHand = this.bestHand();
+            if(bestHand.size()==1) {
+                for(int i=0; i<players.size(); i++) {
+                    int amount = Math.min(bets.get(players.get(i).getName()), bets.get(bestHand.get(0)));
+                    bets.put(players.get(i).getName(), (bets.get(players.get(i).getName())-amount));
+                    bets.put(bestHand.get(0), (bets.get(bestHand.get(0))+amount));
+                }
+                for(int i=0; i<players.size(); i++) {
+                    if(bestHand.get(0).equals(players.get(i).getName())) {
+                        players.get(i).setMoney(players.get(i).getMoney()+bets.get(bestHand.get(0)));
+                        bets.put(bestHand.get(0), 0);
+                        hands.remove(bestHand.get(0));
+                    }
+                }
+            }
+            else if(bestHand.size()>1) {
+                bestHand = this.sortBest();
+                for(int i=0; i<players.size(); i++) {
+                    int amount = Math.min(bets.get(players.get(i).getName()), bets.get(bestHand.get(0)));
+                    bets.put(players.get(i).getName(), (bets.get(players.get(i).getName())-amount));
+                    while(amount > 0) {
+                        for(int j=0; j<bestHand.size(); j++) {
+                            bets.put(bestHand.get(j), bets.get(bestHand.get(j))+1);
+                        }
+                    }
+                    for(int k=0; k<bestHand.size(); k++) {
+                        for(int w=0; w<players.size(); w++) {
+                            if(bestHand.get(k).equals(players.get(w).getName())) {
+                                players.get(w).setMoney(players.get(w).getMoney()+bets.get(bestHand.get(k)));
+                                bets.put(bestHand.get(k), 0);
+                                hands.remove(bestHand.get(k));
+                            }
+                        }
+                    }
+                }
             }
         }
     }
