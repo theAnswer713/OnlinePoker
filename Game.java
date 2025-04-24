@@ -4,7 +4,6 @@ import java.util.HashMap;
 public class Game {
     private ArrayList<Player> players;
     private Deck deck;
-    private ArrayList<Player> winners;
     private HashMap<String, Integer> hands;
     private HashMap<String, Integer> highBets;
     private HashMap<String, Integer> bets;
@@ -12,19 +11,21 @@ public class Game {
     
     public Game(ArrayList<Player> players) {
         this.players = players;
-        winners = new ArrayList<Player>();
         deck = new Deck();
         hands = new HashMap();
         highBets = new HashMap();
         bets = new HashMap();
         pot = 0;
+        for(int i=0; i<players.size(); i++) {
+            bets.put(players.get(i).getName(), 0);
+        }
         for(int i=0; i<10; i++) {
             deck.Shuffle();
         }
     }
     
     //deal hole cards
-    public void holes() {
+    public void deal() {
         for(int i=0; i<2; i++) {
             for(int j=0; j<players.size(); j++) {
                 players.get(j).getHole().add(deck.dealCard());
@@ -36,17 +37,29 @@ public class Game {
     public void bet() {
         //fold, check, call, raise
         //if fold, set boolean false for player
+        for(int i=0; i<players.size(); i++) {
+            highBets.put(players.get(i).getName(), 0);
+        }
         int highest = 0;
         boolean match = false;
         while(match==false) {
             for(int i=0; i<players.size(); i++) {
                 if(players.get(i).isFolded()==false) {
-                    //bet or fold or smth i suppose
+                    //open options to player
+                    //amount is standin for however much is bet
+                    int amount = 0;
+                    bets.put(players.get(i).getName(), amount);
+                    if(amount > highBets.get(players.get(i).getName())) {
+                        highBets.put(players.get(i).getName(), amount);
+                    }
+                    if(amount > highest) {
+                        highest = amount;
+                    }
                 }
             }
             match = true;
             for(int i=0; i<players.size(); i++) {
-                if(players.get(i).isFolded()==false && highBets.get(players.get(i).getName())==highest) {
+                if(players.get(i).isFolded()==false && highBets.get(players.get(i).getName())!=highest && players.get(i).getMoney()>0) {
                     match = false;
                 }
             }
