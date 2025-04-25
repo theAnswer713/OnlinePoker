@@ -9,6 +9,8 @@ public class Game {
     private HashMap<String, Integer> bets;
     private int pot;
     
+    //ALL METHODS SHOULD (I THINK) BE RUN ON THE SERVER AND THEN INFORMATION SENT TO PLAYERS
+    
     public Game(ArrayList<Player> players) {
         this.players = players;
         deck = new Deck();
@@ -34,6 +36,7 @@ public class Game {
         }
     }
     //bet
+    //ts not done yet gang
     public void bet() {
         //fold, check, call, raise
         //if fold, set boolean false for player
@@ -47,6 +50,7 @@ public class Game {
                 if(players.get(i).isFolded()==false) {
                     //open options to player
                     //amount is standin for however much is bet
+                    //yay networking go luca
                     int amount = 0;
                     bets.put(players.get(i).getName(), amount);
                     if(amount > highBets.get(players.get(i).getName())) {
@@ -103,6 +107,7 @@ public class Game {
             }
         }
     }
+    //called when distrubte
     public ArrayList<String> bestHand() {
         int best = 0;
         ArrayList<String> bestName = new ArrayList<String>();
@@ -117,6 +122,7 @@ public class Game {
         }
         return bestName;
     }
+    //called when distrubte
     public ArrayList<String> sortBest() {
         ArrayList<String> bestHand = new ArrayList<String>(this.bestHand());
         for(int j=0; j<bestHand.size()+1; j++) {    
@@ -167,6 +173,19 @@ public class Game {
                         }
                     }
                 }
+            }
+        }
+        for(int i=0; i<players.size(); i++) {
+            bets.put(players.get(i).getName(), 0);
+            hands.put(players.get(i).getName(), 0);
+            while(players.get(i).getHand().size()>0) {
+                players.get(i).getHand().remove(0);
+            }
+            while(players.get(i).getUsed().size()>0) {
+                players.get(i).getUsed().remove(0);
+            }
+            while(players.get(i).getHole().size()>0) {
+                players.get(i).getHole().remove(0);
             }
         }
     }
