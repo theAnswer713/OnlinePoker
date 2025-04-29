@@ -10,7 +10,7 @@ public class PlayingScreen {
     private BufferedReader br;
     private PrintWriter pw;
 
-    public PlayingScreen(Socket socket) {
+    public PlayingScreen(Socket socket) throws Exception {
         try {
             this.socket = socket;
             this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -22,6 +22,13 @@ public class PlayingScreen {
 
         JFrame frame = new JFrame("Poker");
         //have server send playerList
+        String playerList = br.readLine();
+        String[] playerNames = playerList.split("/");
+        Player p1 = new Player(playerNames[0]);
+        Player p2 = new Player(playerNames[1]);
+        Player p3 = new Player(playerNames[2]);
+        Player p4 = new Player(playerNames[3]);
+
 
         //where the game is shown and players are
         JPanel centerPanel = new JPanel();
@@ -66,7 +73,14 @@ public class PlayingScreen {
 
         frame.add(centerPanel, BorderLayout.CENTER);
         frame.add(bottomPanel, BorderLayout.SOUTH);
+
+
     }
+
+    //in actionperformed (i think)
+    //have buttons send specific message through printwriter to server
+    //so for instance, pushing check sends "check", raise sends # amount
+    //fold sends "fold"
 
     private class ListenThread implements Runnable {
         public void run() {

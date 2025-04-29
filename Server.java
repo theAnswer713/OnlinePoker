@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Server {
     private ServerSocket server;
-    private List<Player> playerList; //change to list
+    private List<Player> playerList;
 
     public static void main(String[] args) throws Exception {
         new Server();
@@ -43,8 +43,11 @@ public class Server {
                     nameList = nameList.substring(0, nameList.length()-1);
                     for(Player x:playerList) {
                         x.getPw().println("start");
-                        x.getPw().println(nameList);
                     }
+                    for(Player x:playerList) {
+                        x.getPw().println(playerList);
+                    }
+                    new Game(playerList.toArray(new Player[4]), socket);
                 }
             }
             catch(Exception err) {

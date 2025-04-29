@@ -17,6 +17,15 @@ public class Player {
     private BufferedReader br;
     private PrintWriter pw;
 
+    public Player(String name) {
+        this.name = name;
+        this.hand = new ArrayList<Card>();
+        this.used = new ArrayList<Card>();
+        this.hole = new ArrayList<Card>();
+        this.money = 0;
+        this.folded = false;
+    }
+
     public Player(String name, Socket socket) {
         this.name = name;
         this.hand = new ArrayList<Card>();
