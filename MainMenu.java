@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class MainMenu implements ActionListener {
@@ -73,8 +75,15 @@ public class MainMenu implements ActionListener {
             PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
             System.out.println("Sending username to server...");
             pw.println(nameField.getText());
-            frame.dispose();
-            new PlayingScreen(socket);
+            System.out.println("Username received by server!");
+            System.out.println("Waiting for remaining players to join...");
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String message = br.readLine();
+            System.out.println(message);  //for debugging purposes
+            if(message.equals("start")) {
+                frame.dispose();
+                new PlayingScreen(socket);
+            }
         }
         catch(Exception err) {
             err.printStackTrace();

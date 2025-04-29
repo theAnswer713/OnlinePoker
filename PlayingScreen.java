@@ -21,10 +21,39 @@ public class PlayingScreen {
         }
 
         JFrame frame = new JFrame("Poker");
+        //have server send playerList
 
+        //where the game is shown and players are
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout());
-        //where the game is shown and players are
+        GridBagConstraints c = new GridBagConstraints();
+
+        //JPanel info1 = PlayerInfo(p1, "l");
+
+        //JPanel info2 = PlayerInfo(p2, "r");
+
+        //JPanel info3 = PlayerInfo(p3, "r");
+
+        //JPanel info4 = PlayerInfo(p4, "l");
+
+
+        JLabel n1 = new JLabel("");
+        JLabel n2 = new JLabel("");
+        JLabel n3 = new JLabel("");
+        JLabel n4 = new JLabel("");
+
+        //set layout of different items in grid
+        c.gridwidth = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+
+        //find way to assign the four players to items where we can call methods on each
+
+        c.gridheight = 2;
+
+        //centerPanel.add(panel1, c);
+        //create class to update all of these panels
+
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new GridBagLayout());
