@@ -87,9 +87,7 @@ public class PlayingScreen {
             try{
                 while(!socket.isClosed()) {
                     String message = br.readLine();
-                    if(message.startsWith("JOIN")) {
-                        //add players in
-                    }
+
                     //add else ifs with different beginnings of a message
                 }
             }

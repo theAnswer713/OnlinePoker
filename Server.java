@@ -2,12 +2,18 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.ServerSocket;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
 public class Server {
     private ServerSocket server;
-    private List<Player> playerList;
+    private List<Player> players;
+    private Deck deck;
+    private HashMap<String, Integer> hands;
+    private HashMap<String, Integer> highBets;
+    private HashMap<String, Integer> bets;
+    private int pot;
 
     public static void main(String[] args) throws Exception {
         new Server();
@@ -15,7 +21,12 @@ public class Server {
 
     public Server() throws Exception {
         this.server = new ServerSocket(55555);
-        this.playerList = new ArrayList<Player>();
+        this.players = new ArrayList<Player>();
+        this.deck = new Deck();
+        this.hands = new HashMap();
+        this.highBets = new HashMap();
+        this.bets = new HashMap();
+        this.pot = 0;
 
         Thread acceptThread = new Thread(new AcceptThread());
         acceptThread.start();
@@ -27,27 +38,27 @@ public class Server {
             String nameList = "";
             try {
                 while(!server.isClosed()) {
-                    while(playerList.size()<4) {
+                    while(players.size()<4) {
                         System.out.println("Waiting for players to join...");
                         Socket socket = server.accept();
                         BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                         String name = br.readLine();
                         nameList += name+"/";
                         Player player = new Player(name, socket);
-                        playerList.add(player);
+                        players.add(player);
 
                         Thread listenThread = new Thread(new ListenThread(player));
                         listenThread.start();
                     }
                     System.out.println("All players have joined!");
                     nameList = nameList.substring(0, nameList.length()-1);
-                    for(Player x:playerList) {
+                    for(Player x:players) {
                         x.getPw().println("start");
+                        x.getPw().println(nameList);
                     }
-                    for(Player x:playerList) {
-                        x.getPw().println(playerList);
-                    }
-                    new Game(playerList.toArray(new Player[4]), socket);
+                    Thread gameThread = new Thread(new GameThread());
+                    gameThread.start();
+                    Thread.currentThread().interrupt();
                 }
             }
             catch(Exception err) {
@@ -68,13 +79,179 @@ public class Server {
                 while(!player.getSocket().isClosed()) {
                     String message = player.getBr().readLine();
                     System.out.println(message);
-                    for(Player x: playerList) {
+                    for(Player x: players) {
                         x.getPw().println(message);
                     }
                 }
             }
             catch(Exception err) {
                 err.printStackTrace();
+            }
+        }
+    }
+
+    private class GameThread implements Runnable {
+        public void run() {
+            for(Player player:players) {
+                bets.put(player.getName(), 0);
+            }
+            for(int i=0; i<10; i++) {
+                deck.Shuffle();
+            }
+        }
+    }
+
+    public void deal() {
+        for(int i=0; i<2; i++) {
+            for (Player player :players) {
+                player.getHole().add(deck.dealCard());
+                player.getHand().add(player.getHole().get(i));
+            }
+        }
+    }
+
+    public void bet() {
+        //fold, check, call, raise
+        //if fold, set boolean false for player
+        for (Player player : players) {
+            highBets.put(player.getName(), 0);
+        }
+        int highest = 0;
+        boolean match = false;
+        while(match==false) {
+            for(int i=0; i<players.size(); i++) {
+                if(players.get(i).isFolded()==false) {
+                    //open options to player
+                    //amount is standin for however much is bet
+                    //yay networking go luca
+                    int amount = 0;
+                    bets.put(players.get(i).getName(), amount);
+                    if(amount > highBets.get(players.get(i).getName())) {
+                        highBets.put(players.get(i).getName(), amount);
+                    }
+                    if(amount > highest) {
+                        highest = amount;
+                    }
+                }
+            }
+            match = true;
+            for (Player player : players) {
+                if (player.isFolded() == false && highBets.get(player.getName()) != highest && player.getMoney() > 0) {
+                    match = false;
+                }
+            }
+        }
+    }
+
+    public void flop() {
+        ArrayList<Card> flop = new ArrayList<Card>();
+        for(int i=0; i<3; i++) {
+            flop.add(deck.dealCard());
+            for (Player player : players) {
+                player.getHand().add(flop.get(i));
+            }
+        }
+    }
+
+    public void turn() {
+        Card turn = deck.dealCard();
+        for (Player player : players) {
+            player.getHand().add(turn);
+        }
+    }
+
+    public void river() {
+        Card river = deck.dealCard();
+        for (Player player : players) {
+            player.getHand().add(river);
+        }
+    }
+
+    public void compare() {
+        for (Player player : players) {
+            if (player.isFolded() == false) {
+                hands.put(player.getName(), player.handValue());
+            }
+        }
+    }
+
+    public ArrayList<String> bestHand() {
+        int best = 0;
+        ArrayList<String> bestName = new ArrayList<String>();
+        for (Player player : players) {
+            if (hands.get(player.getName()) > best) {
+                best = hands.get(player.getName());
+                bestName.add(player.getName());
+            } else if (hands.get(player.getName()) == best) {
+                bestName.add(player.getName());
+            }
+        }
+        return bestName;
+    }
+
+    public ArrayList<String> sortBest() {
+        ArrayList<String> bestHand = new ArrayList<String>(this.bestHand());
+        for(int j=0; j<bestHand.size()+1; j++) {
+            for(int i=1; i<bestHand.size(); i++) {
+                if(bets.get(bestHand.get(i)) < bets.get(bestHand.get(i-1))) {
+                    bestHand.add(i-1, bestHand.remove(i));
+                }
+            }
+        }
+        return bestHand;
+    }
+
+    public void distribute() {
+        ArrayList<String> bestHand = new ArrayList<String>();
+        while(pot>0) {
+            bestHand = this.bestHand();
+            if(bestHand.size()==1) {
+                for (Player player : players) {
+                    int amount = Math.min(bets.get(player.getName()), bets.get(bestHand.get(0)));
+                    bets.put(player.getName(), (bets.get(player.getName()) - amount));
+                    bets.put(bestHand.get(0), (bets.get(bestHand.get(0)) + amount));
+                }
+                for (Player player : players) {
+                    if (bestHand.get(0).equals(player.getName())) {
+                        player.setMoney(player.getMoney() + bets.get(bestHand.get(0)));
+                        bets.put(bestHand.get(0), 0);
+                        hands.remove(bestHand.get(0));
+                    }
+                }
+            }
+            else if(bestHand.size()>1) {
+                bestHand = this.sortBest();
+                for(int i=0; i<players.size(); i++) {
+                    int amount = Math.min(bets.get(players.get(i).getName()), bets.get(bestHand.get(0)));
+                    bets.put(players.get(i).getName(), (bets.get(players.get(i).getName())-amount));
+                    while(amount > 0) {
+                        for(int j=0; j<bestHand.size(); j++) {
+                            bets.put(bestHand.get(j), bets.get(bestHand.get(j))+1);
+                        }
+                    }
+                    for(int k=0; k<bestHand.size(); k++) {
+                        for(int w=0; w<players.size(); w++) {
+                            if(bestHand.get(k).equals(players.get(w).getName())) {
+                                players.get(w).setMoney(players.get(w).getMoney()+bets.get(bestHand.get(k)));
+                                bets.put(bestHand.get(k), 0);
+                                hands.remove(bestHand.get(k));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (Player player : players) {
+            bets.put(player.getName(), 0);
+            hands.put(player.getName(), 0);
+            while (player.getHand().size() > 0) {
+                player.getHand().remove(0);
+            }
+            while (player.getUsed().size() > 0) {
+                player.getUsed().remove(0);
+            }
+            while (player.getHole().size() > 0) {
+                player.getHole().remove(0);
             }
         }
     }
