@@ -98,12 +98,22 @@ public class Server {
             for(int i=0; i<10; i++) {
                 deck.Shuffle();
             }
+            deal();
+            bet();
+            flop();
+            bet();
+            turn();
+            bet();
+            turn();
+            bet();
+            compare();
+            distribute();
         }
     }
 
     public void deal() {
         for(int i=0; i<2; i++) {
-            for (Player player :players) {
+            for (Player player:players) {
                 player.getHole().add(deck.dealCard());
                 player.getHand().add(player.getHole().get(i));
             }
@@ -157,13 +167,6 @@ public class Server {
         Card turn = deck.dealCard();
         for (Player player : players) {
             player.getHand().add(turn);
-        }
-    }
-
-    public void river() {
-        Card river = deck.dealCard();
-        for (Player player : players) {
-            player.getHand().add(river);
         }
     }
 

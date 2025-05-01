@@ -24,6 +24,7 @@ import javax.sound.sampled.Clip;
 public class MainMenu implements ActionListener {
     private JFrame frame;
     private JTextField ipField, nameField;
+    private JButton joinButton;
 
     public MainMenu() {
         frame = new JFrame("Poker");
@@ -60,7 +61,7 @@ public class MainMenu implements ActionListener {
         c.gridwidth = 2;
         c.gridx = 0;
         c.gridy = 3;
-        JButton joinButton = new JButton("JOIN");
+        this.joinButton = new JButton("JOIN");
         joinButton.addActionListener(this);
         panel.add(joinButton, c);
 
@@ -88,15 +89,17 @@ public class MainMenu implements ActionListener {
             System.out.println("Connected!");
             PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
             System.out.println("Sending username to server...");
-            pw.println(nameField.getText());
+            String name = nameField.getText();
+            pw.println(name);
             System.out.println("Username received by server!");
             System.out.println("Waiting for remaining players to join...");
+            joinButton.setText("Waiting for remaining players to join...");
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String message = br.readLine();
             System.out.println(message);  //for debugging purposes
             if(message.equals("start")) {
                 frame.dispose();
-                new PlayingScreen(socket);
+                new PlayingScreen(socket, name);
             }
         }
         catch(Exception err) {

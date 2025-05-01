@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+
+//make debugging boolean that enables a bunch of prints when true
+//if(debugging) System.out.println(sending, receiving, etc)
 
 import java.io.File;
 import java.io.IOException;
@@ -24,12 +28,16 @@ import javax.sound.sampled.Clip;
 
 public class PlayingScreen {
     private Socket socket;
+    private String name;
     private BufferedReader br;
     private PrintWriter pw;
+    private int turnNumber;
+    private Color green, white, brown;
 
-    public PlayingScreen(Socket socket) throws Exception {
+    public PlayingScreen(Socket socket, String name) throws Exception {
         try {
             this.socket = socket;
+            this.name = name;
             this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.pw = new PrintWriter(socket.getOutputStream(), true);
         }
@@ -38,6 +46,9 @@ public class PlayingScreen {
         }
 
         JFrame frame = new JFrame("Poker");
+        green = new Color(25, 70, 26);
+        white = new Color(199, 199, 204);
+        brown = new Color(50, 37, 12);
         //have server send playerList
         String playerList = br.readLine();
         String[] playerNames = playerList.split("/");
@@ -45,39 +56,48 @@ public class PlayingScreen {
         Player p2 = new Player(playerNames[1]);
         Player p3 = new Player(playerNames[2]);
         Player p4 = new Player(playerNames[3]);
-
+        for(int i=0; i<playerNames.length; i++) {
+            if(playerNames[i].equals(name)) {
+                turnNumber = i+1;
+            }
+        }
 
         //where the game is shown and players are
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
-        //JPanel info1 = PlayerInfo(p1, "l");
-
-        //JPanel info2 = PlayerInfo(p2, "r");
-
-        //JPanel info3 = PlayerInfo(p3, "r");
-
-        //JPanel info4 = PlayerInfo(p4, "l");
-
-
-        JLabel n1 = new JLabel("");
-        JLabel n2 = new JLabel("");
-        JLabel n3 = new JLabel("");
-        JLabel n4 = new JLabel("");
-
         //set layout of different items in grid
-        c.gridwidth = 1;
+        c.gridwidth = 2;
+        c.gridheight = 2;
         c.gridx = 0;
         c.gridy = 0;
+        JPanel info1 = PlayerInfo(p1, "l");
+        centerPanel.add(info1, c);
 
-        //find way to assign the four players to items where we can call methods on each
+        c.gridx = 7;
+        JPanel info2 = PlayerInfo(p2, "r");
+        centerPanel.add(info2, c);
 
-        c.gridheight = 2;
+        c.gridy = 2;
+        JPanel info3 = PlayerInfo(p3, "r");
+        centerPanel.add(info3, c);
 
-        //centerPanel.add(panel1, c);
-        //create class to update all of these panels
+        c.gridx = 0;
+        JPanel info4 = PlayerInfo(p4, "l");
+        centerPanel.add(info4, c);
 
+        c.gridheight = 1;
+        c.gridwidth = 4;
+        c.gridx = 2;
+        c.gridy = 0;
+        JPanel dealer = new JPanel();
+
+        c.gridheight = 4;
+        c.gridy = 1;
+        JPanel table = Table();
+
+        //update all of these panels
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new GridBagLayout());
@@ -103,9 +123,7 @@ public class PlayingScreen {
         public void run() {
             try{
                 while(!socket.isClosed()) {
-                    String message = br.readLine();
 
-                    //add else ifs with different beginnings of a message
                 }
             }
             catch(Exception err) {
@@ -125,5 +143,64 @@ public class PlayingScreen {
             System.out.println("Error with playing sound.");
             ex.printStackTrace();
         }
+    }
+
+    public JPanel Table() {
+        //add ArrayList<Card> to constructor
+        JPanel table = new JPanel();
+        table.setLayout(new FlowLayout());
+        table.setBackground(brown);
+        return table;
+    }
+
+    public JPanel PlayerInfo(Player player, String side) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        if(side.equals("l")) {
+            JLabel name = new JLabel(player.getName());
+            c.gridx = 0;
+            c.gridy = 0;
+            panel.add(name, c);
+            name.setForeground(white);
+
+            JLabel money = new JLabel("$"+player.getMoney());
+            c.gridy = 1;
+            panel.add(money, c);
+            money.setForeground(white);
+
+            JLabel image = new JLabel();
+            String path = System.getProperty("user.dir")+"\\person.png";
+            ImageIcon icon = new ImageIcon(path);
+            image.setIcon(icon);
+            c.gridheight = 2;
+            c.gridx = 0;
+            c.gridy = 1;
+            panel.add(image, c);
+        }
+        if(side.equals("r")) {
+            JLabel name = new JLabel(player.getName());
+            c.gridx = 1;
+            c.gridy = 0;
+            panel.add(name, c);
+            name.setForeground(white);
+
+            JLabel money = new JLabel("$"+player.getMoney());
+            c.gridy = 1;
+            panel.add(money, c);
+            money.setForeground(white);
+
+            JLabel image = new JLabel();
+            String path = System.getProperty("user.dir")+"\\person.png";
+            ImageIcon icon = new ImageIcon(path);
+            image.setIcon(icon);
+            c.gridheight = 2;
+            c.gridx = 0;
+            c.gridy = 0;
+            panel.add(image, c);
+        }
+        panel.setBackground(green);
+        return panel;
     }
 }
