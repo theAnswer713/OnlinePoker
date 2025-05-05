@@ -115,6 +115,9 @@ public class MainMenu implements ActionListener {
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
+            if (!frame.isVisible()) {
+                clip.stop();
+            }
         } catch(Exception ex) {
             System.out.println("Error with playing sound.");
             ex.printStackTrace();
