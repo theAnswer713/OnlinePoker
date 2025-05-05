@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.io.File;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -114,6 +115,9 @@ public class MainMenu implements ActionListener {
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
+            if (!frame.isVisible()) {
+                clip.stop();
+            }
         } catch(Exception ex) {
             System.out.println("Error with playing sound.");
             ex.printStackTrace();
