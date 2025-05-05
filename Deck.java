@@ -6,10 +6,10 @@ public class Deck {
         deck = new Stack<Card>();
         for (int s=0; s<4; s++) {
             String suit = "";
-            if(s==0) {suit="♥";}
-            if(s==1) {suit="♦";}
-            if(s==2) {suit="♣";}
-            if(s==3) {suit="♠";}
+            if(s==0) {suit="h";}
+            if(s==1) {suit="d";}
+            if(s==2) {suit="c";}
+            if(s==3) {suit="s";}
             for (int v=2; v<=14; v++) {
                 deck.push(new Card(v, suit));
             }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class Server {
     private ServerSocket server;
     private List<Player> players;
+    private List<Card> tableCards;
     private Deck deck;
     private HashMap<String, Integer> hands;
     private HashMap<String, Integer> highBets;
@@ -22,6 +23,7 @@ public class Server {
     public Server() throws Exception {
         this.server = new ServerSocket(55555);
         this.players = new ArrayList<Player>();
+        this.tableCards = new ArrayList<Card>();
         this.deck = new Deck();
         this.hands = new HashMap();
         this.highBets = new HashMap();
@@ -93,6 +95,13 @@ public class Server {
     private class GameThread implements Runnable {
         public void run() {
             for(Player player:players) {
+                for(int i=0;i<players.size();i++) {
+                    String cardNames = players.get(i).getHand().get(0).getSuit();
+                    //then add value, suit, value for both cards
+                    player.getPw().println(cardNames);
+                }
+            }
+            for(Player player:players) {
                 bets.put(player.getName(), 0);
             }
             for(int i=0; i<10; i++) {
@@ -117,6 +126,7 @@ public class Server {
                 player.getHole().add(deck.dealCard());
                 player.getHand().add(player.getHole().get(i));
             }
+
         }
     }
 
@@ -154,17 +164,17 @@ public class Server {
     }
 
     public void flop() {
-        ArrayList<Card> flop = new ArrayList<Card>();
         for(int i=0; i<3; i++) {
-            flop.add(deck.dealCard());
+            tableCards.add(deck.dealCard());
             for (Player player : players) {
-                player.getHand().add(flop.get(i));
+                player.getHand().add(tableCards.get(i));
             }
         }
     }
 
     public void turn() {
         Card turn = deck.dealCard();
+        tableCards.add(turn);
         for (Player player : players) {
             player.getHand().add(turn);
         }

@@ -44,14 +44,16 @@ public class Player {
         }
     }
 
-
-
     public String getName() {
         return name;
     }
 
     public ArrayList<Card> getHand() {
         return hand;
+    }
+
+    public void setHand(Card c1, Card c2) {
+
     }
 
     public ArrayList<Card> getUsed() {
