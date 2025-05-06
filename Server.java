@@ -157,9 +157,19 @@ public class Server {
                             player.getPw().println("fold"+i);
                         }
                     }
+                    if(move.equals("check")) {
+                        for(Player player:players) {
+                            player.getPw().println("check"+i);
+                        }
+                    }
+                    if(move.startsWith("raise")) {
+                        int amount = Integer.parseInt(move.substring(6));
+                        for(Player player:players) {
+                            player.getPw().println("raise"+i+amount);
+                        }
+                    }
 
-                    //now do this for the other buttons!!
-
+                    //does the below section need to be in if(move.startsWith("raise:))?
                     int amount = 0;
                     bets.put(players.get(i).getName(), amount);
                     if(amount > highBets.get(players.get(i).getName())) {

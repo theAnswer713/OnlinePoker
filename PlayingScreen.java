@@ -41,6 +41,9 @@ public class PlayingScreen implements ActionListener {
             err.printStackTrace();
         }
 
+        Thread listenThread = new Thread(new ListenThread());
+        listenThread.start();
+
         JFrame frame = new JFrame("Poker");
         green = new Color(25, 70, 26);
         white = new Color(199, 199, 204);
@@ -107,6 +110,7 @@ public class PlayingScreen implements ActionListener {
         c.gridheight = 4;
         c.gridy = 1;
         JPanel table = Table(new ArrayList<Card>());
+        //this will need to have cards from hand - cards in hole
         centerPanel.add(table); //send it the cards on the table
 
         c.gridheight = 1;
@@ -167,9 +171,16 @@ public class PlayingScreen implements ActionListener {
                 while(!socket.isClosed()) {
                     String message = br.readLine();
                     System.out.println(message);
+                    int playerNumber = Integer.parseInt(message.substring(message.length()-1));
                     if(message.startsWith("fold")) {
-                        int playerNumber = Integer.parseInt(message.substring(message.length()-1));
                         players.get(playerNumber).fold();
+                    }
+                    if(message.startsWith("check")) {
+                        players.get(playerNumber).check(Integer.parseInt(message.substring(6))); //maybe create method for this
+                    }
+                    if(message.startsWith("raise")) {
+                        players.get(playerNumber).raise(Integer.parseInt(message.substring(6))); //also create method for this
+                        //check with Jonathan on check and raise, see if method needed or already there
                     }
                     //add for other buttons
                 }

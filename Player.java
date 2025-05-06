@@ -70,6 +70,14 @@ public class Player {
         folded = true;
     }
 
+    public void check(int amount) {
+        setMoney(getMoney()-amount);
+    }
+
+    public void raise(int amount) {
+        setMoney(getMoney()-amount);
+    }
+
     public ArrayList<Card> getUsed() {
         return used;
     }
