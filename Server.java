@@ -94,29 +94,35 @@ public class Server {
 
     private class GameThread implements Runnable {
         public void run() {
-            for(Player player:players) {
-                for(int i=0;i<players.size();i++) {
-                    String cardNames = players.get(i).getHand().get(0).getSuit();
-                    //then add value, suit, value for both cards
-                    player.getPw().println(cardNames);
+            try {
+                for (Player player : players) {
+                    for (int i = 0; i < players.size(); i++) {
+                        Card c1 = players.get(i).getHand().get(0);
+                        Card c2 = players.get(i).getHand().get(1);
+                        String cardNames = c1.getSuit() + c1.getValue() + "/" + c2.getSuit() + c2.getValue();
+                        player.getPw().println(cardNames);
+                    }
                 }
+                for (Player player : players) {
+                    bets.put(player.getName(), 0);
+                }
+                for (int i = 0; i < 10; i++) {
+                    deck.Shuffle();
+                }
+                deal();
+                bet();
+                flop();
+                bet();
+                turn();
+                bet();
+                turn();
+                bet();
+                compare();
+                distribute();
             }
-            for(Player player:players) {
-                bets.put(player.getName(), 0);
+            catch(Exception err) {
+                err.printStackTrace();
             }
-            for(int i=0; i<10; i++) {
-                deck.Shuffle();
-            }
-            deal();
-            bet();
-            flop();
-            bet();
-            turn();
-            bet();
-            turn();
-            bet();
-            compare();
-            distribute();
         }
     }
 
@@ -130,7 +136,7 @@ public class Server {
         }
     }
 
-    public void bet() {
+    public void bet() throws Exception {
         //fold, check, call, raise
         //if fold, set boolean false for player
         for (Player player : players) {
@@ -144,6 +150,16 @@ public class Server {
                     //open options to player
                     //amount is standin for however much is bet
                     //yay networking go luca
+                    String move = players.get(i).getBr().readLine();
+                    if(move.equals("fold")) {
+                        players.get(i).fold();
+                        for(Player player:players) {
+                            player.getPw().println("fold"+i);
+                        }
+                    }
+
+                    //now do this for the other buttons!!
+
                     int amount = 0;
                     bets.put(players.get(i).getName(), amount);
                     if(amount > highBets.get(players.get(i).getName())) {

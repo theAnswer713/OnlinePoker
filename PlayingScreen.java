@@ -19,13 +19,16 @@ import static javax.sound.sampled.AudioSystem.getAudioInputStream;
 
 import javax.sound.sampled.Clip;
 
-public class PlayingScreen {
+public class PlayingScreen implements ActionListener {
     private Socket socket;
     private String name;
     private BufferedReader br;
     private PrintWriter pw;
+    private ArrayList<Player> players;
     private int turnNumber;
     private Color green, white, brown;
+    private JButton foldButton, checkButton, raiseButton;
+    private JTextField amountField;
 
     public PlayingScreen(Socket socket, String name) throws Exception {
         try {
@@ -45,20 +48,29 @@ public class PlayingScreen {
         //have server send playerList
         String playerList = br.readLine();
         String[] playerNames = playerList.split("/");
+        players = new ArrayList<Player>();
+
         Player p1 = new Player(playerNames[0]);
+        p1.setHole(br.readLine());
+        players.add(p1);
+
         Player p2 = new Player(playerNames[1]);
+        p2.setHole(br.readLine());
+        players.add(p2);
+
         Player p3 = new Player(playerNames[2]);
+        p3.setHole(br.readLine());
+        players.add(p3);
+
         Player p4 = new Player(playerNames[3]);
+        p4.setHole(br.readLine());
+        players.add(p4);
+
         for(int i=0; i<playerNames.length; i++) {
             if(playerNames[i].equals(name)) {
-                turnNumber = i+1;
+                turnNumber = i;
             }
         }
-        for(int i=0;i<4;i++) {
-            br.readLine();
-        }
-
-        ArrayList<Card> hand = new ArrayList<Card>();
 
         //where the game is shown and players are
         JPanel centerPanel = new JPanel();
@@ -100,32 +112,38 @@ public class PlayingScreen {
         c.gridheight = 1;
         c.gridy = 5;
         JPanel handPanel = new JPanel();
-        //be able to send cards in hand to this panel
+        handPanel.setLayout(new FlowLayout());
+        for(Card x:players.get(turnNumber).getHole()) {
+            JLabel image = new JLabel();
+            int value = x.getValue();
+            if(value == 14) {
+                value = 1;
+            }
+            String path = System.getProperty("user.dir")+"\\"+x.getSuit()+value+".png";
+            ImageIcon icon = new ImageIcon(path);
+            image.setIcon(icon);
+            handPanel.add(image);
+        }
         centerPanel.add(handPanel);
 
         //update all of these panels
 
         JPanel buttons = new JPanel();
         buttons.setLayout(new FlowLayout());
-        JButton foldButton = new JButton("FOLD");
+        foldButton = new JButton("FOLD");
         foldButton.addActionListener(this);
         buttons.add(foldButton);
 
-        JButton checkButton = new JButton("CHECK");
+        checkButton = new JButton("CHECK");
         checkButton.addActionListener(this);
         buttons.add(checkButton);
 
-        JButton raiseButton = new JButton("RAISE");
+        raiseButton = new JButton("RAISE");
         raiseButton.addActionListener(this);
         buttons.add(raiseButton);
 
-        JTextField amount = new JTextField();
-
-        buttons.add(amount);
-
-        JButton sendButton = new JButton("SEND");
-        sendButton.addActionListener(this);
-        buttons.add(sendButton);
+        amountField = new JTextField(1);
+        buttons.add(amountField);
 
         //create buttons that appear under certain conditions
         //make buttons have functions that send certain messages
@@ -149,6 +167,11 @@ public class PlayingScreen {
                 while(!socket.isClosed()) {
                     String message = br.readLine();
                     System.out.println(message);
+                    if(message.startsWith("fold")) {
+                        int playerNumber = Integer.parseInt(message.substring(message.length()-1));
+                        players.get(playerNumber).fold();
+                    }
+                    //add for other buttons
                 }
             }
             catch(Exception err) {
@@ -159,7 +182,16 @@ public class PlayingScreen {
 
     public void actionPerformed(ActionEvent e) {
         try{
-
+            if(e.getSource() == foldButton) {
+                players.get(turnNumber).fold();
+                pw.println("fold");
+            }
+            if(e.getSource() == checkButton) {
+                pw.println("check");
+            }
+            if(e.getSource() == raiseButton) {
+                pw.println("raise"+amountField.getText());
+            }
         }
         catch(Exception err) {
             err.printStackTrace();

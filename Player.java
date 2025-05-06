@@ -22,7 +22,7 @@ public class Player {
         this.hand = new ArrayList<Card>();
         this.used = new ArrayList<Card>();
         this.hole = new ArrayList<Card>();
-        this.money = 0;
+        this.money = 1000;
         this.folded = false;
     }
 
@@ -31,7 +31,7 @@ public class Player {
         this.hand = new ArrayList<Card>();
         this.used = new ArrayList<Card>();
         this.hole = new ArrayList<Card>();
-        this.money = 0;
+        this.money = 1000;
         this.folded = false;
 
         try {
@@ -52,8 +52,22 @@ public class Player {
         return hand;
     }
 
-    public void setHand(Card c1, Card c2) {
+    public void setHole(String str) {
+        hole.clear();
+        String[] cards = str.split("/");
+        for(int i=0; i<cards.length; i++) {
+            if(cards[i].substring(1).equals("14")) {
+                cards[i] = cards[i].substring(0,1)+"1";
+            }
+        }
+        String c1 = cards[0];
+        String c2 = cards[1];
+        hole.add(new Card(Integer.parseInt(c1.substring(1)), c1.substring(0,1)));
+        hole.add(new Card(Integer.parseInt(c2.substring(1)), c2.substring(0,1)));
+    }
 
+    public void fold() {
+        folded = true;
     }
 
     public ArrayList<Card> getUsed() {
