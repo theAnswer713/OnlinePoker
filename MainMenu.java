@@ -26,6 +26,7 @@ public class MainMenu implements ActionListener {
     private JFrame frame;
     private JTextField ipField, nameField;
     private JButton joinButton;
+    private boolean play;
 
     public MainMenu() {
         frame = new JFrame("Poker");
@@ -80,6 +81,9 @@ public class MainMenu implements ActionListener {
         frame.setLocationRelativeTo(null);
         frame.setSize(1200, 800);
         frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        play=true;
+        playSound();
     }
 
     @Override
@@ -100,6 +104,7 @@ public class MainMenu implements ActionListener {
             System.out.println(message);  //for debugging purposes
             if(message.equals("start")) {
                 frame.dispose();
+                play=false;
                 new PlayingScreen(socket, name);
             }
         }
@@ -115,7 +120,7 @@ public class MainMenu implements ActionListener {
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
-            if (!frame.isVisible()) {
+            if (play==false) {
                 clip.stop();
             }
         } catch(Exception ex) {
