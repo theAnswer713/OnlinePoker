@@ -26,8 +26,7 @@ public class MainMenu implements ActionListener {
     private JFrame frame;
     private JTextField ipField, nameField;
     private JButton joinButton;
-    private boolean play;
-
+    private Clip clip;
     public MainMenu() {
         frame = new JFrame("Poker");
         JPanel panel = new JPanel();
@@ -82,7 +81,6 @@ public class MainMenu implements ActionListener {
         frame.setSize(1200, 800);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        play=true;
         playSound();
     }
 
@@ -104,7 +102,7 @@ public class MainMenu implements ActionListener {
             System.out.println(message);  //for debugging purposes
             if(message.equals("start")) {
                 frame.dispose();
-                play=false;
+                clip.stop();
                 new PlayingScreen(socket, name);
             }
         }
@@ -116,13 +114,10 @@ public class MainMenu implements ActionListener {
     public void playSound() {
         try {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("sounds\\StartScreen.wav").getAbsoluteFile());
-            Clip clip = AudioSystem.getClip();
+            clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
-            if (play==false) {
-                clip.stop();
-            }
         } catch(Exception ex) {
             System.out.println("Error with playing sound.");
             ex.printStackTrace();
