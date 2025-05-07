@@ -48,6 +48,12 @@ public class Deck {
                     deck.push(r.pop());
                 }
             }
+            while(!l.isEmpty()) {
+                deck.push(l.pop());
+            }
+            while(!r.isEmpty()) {
+                deck.push(r.pop());
+            }
         }
     }
 }
