@@ -45,7 +45,6 @@ public class Server {
                         Socket socket = server.accept();
                         BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                         String name = br.readLine();
-                        nameList += name+"/";
                         Player player = new Player(name, socket);
                         players.add(player);
 
@@ -53,13 +52,16 @@ public class Server {
                         listenThread.start();
                     }
                     System.out.println("All players have joined!");
+                    for(Player player:players) {
+                        nameList+=player.getName()+"/";
+                    }
                     nameList = nameList.substring(0, nameList.length()-1);
                     for(Player x:players) {
                         x.getPw().println("start");
                         x.getPw().println(nameList);
                     }
-                    Thread gameThread = new Thread(new GameThread());
-                    gameThread.start();
+                    Thread infoThread = new Thread(new InfoThread());
+                    infoThread.start();
                     Thread.currentThread().interrupt();
                 }
             }
@@ -92,24 +94,45 @@ public class Server {
         }
     }
 
-    private class GameThread implements Runnable {
+    private class InfoThread implements Runnable {
         public void run() {
             try {
+                deck = new Deck();
+                /**
+                for (int i = 0; i < 10; i++) {
+                    deck.shuffle();
+                    System.out.println(deck.getDeck().size());
+                }
+                 **/
+                System.out.println("Shuffling complete. Number of cards: "+deck.getDeck().size());
+                deal();
+
+                //tells people what their cards are
                 for (Player player : players) {
                     for (int i = 0; i < players.size(); i++) {
-                        Card c1 = players.get(i).getHand().get(0);
-                        Card c2 = players.get(i).getHand().get(1);
+                        Card c1 = players.get(i).getHole().get(0);
+                        Card c2 = players.get(i).getHole().get(1);
                         String cardNames = c1.getSuit() + c1.getValue() + "/" + c2.getSuit() + c2.getValue();
                         player.getPw().println(cardNames);
                     }
                 }
+                Thread gameThread = new Thread(new GameThread());
+                gameThread.start();
+                Thread.currentThread().interrupt();
+            }
+            catch(Exception err) {
+                err.printStackTrace();
+            }
+        }
+    }
+
+    private class GameThread implements Runnable {
+        public void run() {
+            try {
+                //sets everyone's bets to 0
                 for (Player player : players) {
                     bets.put(player.getName(), 0);
                 }
-                for (int i = 0; i < 10; i++) {
-                    deck.Shuffle();
-                }
-                deal();
                 bet();
                 flop();
                 bet();

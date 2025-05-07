@@ -46,8 +46,8 @@ public class PlayingScreen implements ActionListener {
         listenThread.start();
 
         JFrame frame = new JFrame("Poker");
-        green = new Color(25, 70, 26);
         white = new Color(199, 199, 204);
+        green = new Color(25, 70, 26);
         brown = new Color(50, 37, 12);
         //have server send playerList
         String playerList = br.readLine();
