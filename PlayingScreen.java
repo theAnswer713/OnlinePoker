@@ -29,6 +29,7 @@ public class PlayingScreen implements ActionListener {
     private Color green, white, brown;
     private JButton foldButton, checkButton, raiseButton;
     private JTextField amountField;
+    private boolean play;
 
     public PlayingScreen(Socket socket, String name) throws Exception {
         try {
@@ -161,6 +162,9 @@ public class PlayingScreen implements ActionListener {
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        play=true;
+        playSound();
     }
 
     //in actionperformed (i think)
@@ -213,11 +217,14 @@ public class PlayingScreen implements ActionListener {
 
     public void playSound() {
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("Noir Noises.wav").getAbsoluteFile());
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("sounds\\Noir Noises.wav").getAbsoluteFile());
             Clip clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
+            if(play==false) {
+                clip.stop();
+            }
         } catch(Exception ex) {
             System.out.println("Error with playing sound.");
             ex.printStackTrace();
