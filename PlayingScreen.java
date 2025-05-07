@@ -29,7 +29,7 @@ public class PlayingScreen implements ActionListener {
     private Color green, white, brown;
     private JButton foldButton, checkButton, raiseButton;
     private JTextField amountField;
-    private boolean play;
+    private Clip clip;
 
     public PlayingScreen(Socket socket, String name) throws Exception {
         try {
@@ -163,7 +163,6 @@ public class PlayingScreen implements ActionListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        play=true;
         playSound();
     }
 
@@ -218,13 +217,10 @@ public class PlayingScreen implements ActionListener {
     public void playSound() {
         try {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("sounds\\Noir Noises.wav").getAbsoluteFile());
-            Clip clip = AudioSystem.getClip();
+            clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
-            if(play==false) {
-                clip.stop();
-            }
         } catch(Exception ex) {
             System.out.println("Error with playing sound.");
             ex.printStackTrace();
