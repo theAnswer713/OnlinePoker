@@ -71,11 +71,11 @@ public class Player {
     }
 
     public void check(int amount) {
-        setMoney(getMoney()-amount);
+        money -= amount;
     }
 
     public void raise(int amount) {
-        setMoney(getMoney()-amount);
+        money -= amount;
     }
 
     public ArrayList<Card> getUsed() {
@@ -89,18 +89,23 @@ public class Player {
     public int getMoney() {
         return money;
     }
+
     public void setMoney(int m) {
         this.money = m;
     }
+
     public boolean isFolded() {
         return folded;
     }
+
     public Socket getSocket() {
         return socket;
     }
+
     public BufferedReader getBr() {
         return br;
     }
+
     public PrintWriter getPw() {
         return pw;
     }

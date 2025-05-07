@@ -157,7 +157,10 @@ public class PlayingScreen implements ActionListener {
         frame.add(centerPanel, BorderLayout.CENTER);
         frame.add(buttons, BorderLayout.SOUTH);
 
-
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 
     //in actionperformed (i think)
@@ -179,8 +182,7 @@ public class PlayingScreen implements ActionListener {
                         players.get(playerNumber).check(Integer.parseInt(message.substring(6))); //maybe create method for this
                     }
                     if(message.startsWith("raise")) {
-                        players.get(playerNumber).raise(Integer.parseInt(message.substring(6))); //also create method for this
-                        //check with Jonathan on check and raise, see if method needed or already there
+                        players.get(playerNumber).raise(Integer.parseInt(message.substring(6))); //maybe create method for this
                     }
                     //add for other buttons
                 }

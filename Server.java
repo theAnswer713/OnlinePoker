@@ -159,7 +159,7 @@ public class Server {
                     }
                     if(move.equals("check")) {
                         for(Player player:players) {
-                            player.getPw().println("check"+i);
+                            player.getPw().println("check"+i+highest);
                         }
                     }
                     if(move.startsWith("raise")) {
