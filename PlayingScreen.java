@@ -18,6 +18,7 @@ import javax.sound.sampled.AudioSystem;
 import static javax.sound.sampled.AudioSystem.getAudioInputStream;
 
 import javax.sound.sampled.Clip;
+import javax.swing.border.Border;
 
 public class PlayingScreen implements ActionListener {
     private Socket socket;
@@ -155,6 +156,8 @@ public class PlayingScreen implements ActionListener {
         //code the messages to start with unique identifiers
         //determine what those identifiers will be
 
+        frame.setBackground(green);
+        frame.setLayout(new BorderLayout());
         frame.add(centerPanel, BorderLayout.CENTER);
         frame.add(buttons, BorderLayout.SOUTH);
 
@@ -162,7 +165,6 @@ public class PlayingScreen implements ActionListener {
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         playSound();
     }
 

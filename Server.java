@@ -62,7 +62,7 @@ public class Server {
                     }
                     Thread infoThread = new Thread(new InfoThread());
                     infoThread.start();
-                    Thread.currentThread().interrupt();
+                    break;
                 }
             }
             catch(Exception err) {
@@ -98,25 +98,21 @@ public class Server {
         public void run() {
             try {
                 deck = new Deck();
-                for (int i = 0; i < 10; i++) {
-                    deck.shuffle();
-                    System.out.println(deck.getDeck().size());
-                }
+                deck.shuffle();
                 System.out.println("Shuffling complete. Number of cards: "+deck.getDeck().size());
                 deal();
 
                 //tells people what their cards are
-                for (Player player : players) {
-                    for (int i = 0; i < players.size(); i++) {
+                for (int i = 0; i < players.size(); i++) {
                         Card c1 = players.get(i).getHole().get(0);
                         Card c2 = players.get(i).getHole().get(1);
                         String cardNames = c1.getSuit() + c1.getValue() + "/" + c2.getSuit() + c2.getValue();
-                        player.getPw().println(cardNames);
+                        players.get(i).getPw().println(cardNames);
+                        System.out.println(cardNames);
                     }
-                }
                 Thread gameThread = new Thread(new GameThread());
                 gameThread.start();
-                Thread.currentThread().interrupt();
+                System.out.println("GameThread started");
             }
             catch(Exception err) {
                 err.printStackTrace();

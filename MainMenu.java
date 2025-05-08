@@ -104,7 +104,9 @@ public class MainMenu implements ActionListener {
             if(message.equals("start")) {
                 frame.dispose();
                 clip.stop();
+                System.out.println("All players have joined!");
                 new PlayingScreen(socket, name);
+                System.out.println("PlayingScreen created");
             }
         }
         catch(Exception err) {
