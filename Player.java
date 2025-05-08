@@ -26,7 +26,7 @@ public class Player {
         this.folded = false;
     }
 
-    public Player(String name, Socket socket) {
+    public Player(String name, Socket socket) throws Exception {
         this.name = name;
         this.hand = new ArrayList<Card>();
         this.used = new ArrayList<Card>();
@@ -34,14 +34,9 @@ public class Player {
         this.money = 1000;
         this.folded = false;
 
-        try {
-            this.socket = socket;
-            this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.pw = new PrintWriter(socket.getOutputStream());
-        }
-        catch(Exception err) {
-            err.printStackTrace();
-        }
+        this.socket = socket;
+        this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        this.pw = new PrintWriter(socket.getOutputStream());
     }
 
     public String getName() {

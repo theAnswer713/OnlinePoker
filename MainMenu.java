@@ -101,7 +101,7 @@ public class MainMenu implements ActionListener {
             System.out.println("Username received by server!");
             System.out.println("Waiting for remaining players to join...");
             joinButton.setText("Waiting for remaining players to join...");
-            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String message = br.readLine();
             System.out.println(message);  //for debugging purposes
             if(message.equals("start")) {
