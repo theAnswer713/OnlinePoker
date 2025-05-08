@@ -37,7 +37,6 @@ public class Server {
 
     private class AcceptThread implements Runnable {
         public void run() {
-            String nameList = "";
             try {
                 while(!server.isClosed()) {
                     while(players.size()<4) {
@@ -52,16 +51,14 @@ public class Server {
                         listenThread.start();
                     }
                     System.out.println("All players have joined!");
+
                     for(Player player:players) {
-                        nameList+=player.getName()+"/";
+                        player.getPw().println("start");
                     }
-                    nameList = nameList.substring(0, nameList.length()-1);
-                    for(Player x:players) {
-                        x.getPw().println("start");
-                        x.getPw().println(nameList);
-                    }
+                    System.out.println("start");
                     Thread infoThread = new Thread(new InfoThread());
                     infoThread.start();
+                    System.out.println("InfoThread started");
                     break;
                 }
             }
@@ -97,6 +94,16 @@ public class Server {
     private class InfoThread implements Runnable {
         public void run() {
             try {
+                String nameList = "";
+                for(Player player:players) {
+                    nameList+=player.getName()+"/";
+                }
+                nameList = nameList.substring(0,nameList.length()-1);
+                System.out.println(nameList);
+                for(Player player:players) {
+                    player.getPw().println(nameList);
+                }
+
                 deck = new Deck();
                 deck.shuffle();
                 System.out.println("Shuffling complete. Number of cards: "+deck.getDeck().size());

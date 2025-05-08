@@ -28,6 +28,9 @@ public class MainMenu implements ActionListener {
     private JTextField ipField, nameField;
     private JButton joinButton;
     private Clip clip;
+    private BufferedReader br;
+    private PrintWriter pw;
+
     public MainMenu() {
         frame = new JFrame("Poker");
         JPanel panel = new JPanel();
@@ -91,14 +94,14 @@ public class MainMenu implements ActionListener {
             System.out.println("Trying to connect...");
             Socket socket = new Socket(ipField.getText(),55555);
             System.out.println("Connected!");
-            PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
+            pw = new PrintWriter(socket.getOutputStream(), true);
             System.out.println("Sending username to server...");
             String name = nameField.getText();
             pw.println(name);
             System.out.println("Username received by server!");
             System.out.println("Waiting for remaining players to join...");
             joinButton.setText("Waiting for remaining players to join...");
-            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String message = br.readLine();
             System.out.println(message);  //for debugging purposes
             if(message.equals("start")) {
