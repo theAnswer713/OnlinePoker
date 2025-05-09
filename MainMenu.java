@@ -30,6 +30,8 @@ public class MainMenu implements ActionListener {
     private Clip clip;
     private BufferedReader br;
     private PrintWriter pw;
+    private Socket socket;
+    private String name;
 
     public MainMenu() {
         frame = new JFrame("Poker");
@@ -92,28 +94,41 @@ public class MainMenu implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         try {
             System.out.println("Trying to connect...");
-            Socket socket = new Socket(ipField.getText(),55555);
-            System.out.println("Connected!");
+            socket = new Socket(ipField.getText(), 55555);
             pw = new PrintWriter(socket.getOutputStream(), true);
+            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            Thread listenThread = new Thread(new ListenThread());
+            listenThread.start();
+            System.out.println("Connected!");
             System.out.println("Sending username to server...");
-            String name = nameField.getText();
+            name = nameField.getText();
             pw.println(name);
             System.out.println("Username received by server!");
             System.out.println("Waiting for remaining players to join...");
             joinButton.setText("Waiting for remaining players to join...");
-            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String message = br.readLine();
-            System.out.println(message);  //for debugging purposes
-            if(message.equals("start")) {
-                frame.dispose();
-                clip.stop();
-                System.out.println("All players have joined!");
-                new PlayingScreen(socket, name);
-                System.out.println("PlayingScreen created");
-            }
         }
         catch(Exception err) {
             err.printStackTrace();
+        }
+    }
+
+    private class ListenThread implements Runnable {
+        public void run() {
+            try {
+                while(!socket.isClosed()) {
+                    String message = br.readLine();
+                    if(message.equals("start")) {
+                        frame.dispose();
+                        clip.stop();
+                        System.out.println("All players have joined!");
+                        new PlayingScreen(socket, name);
+                        System.out.println("PlayingScreen created");
+                    }
+                }
+            }
+            catch(Exception err) {
+                err.printStackTrace();
+            }
         }
     }
 
