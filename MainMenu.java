@@ -99,6 +99,7 @@ public class MainMenu implements ActionListener {
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             Thread listenThread = new Thread(new ListenThread());
             listenThread.start();
+            System.out.println("ListenThread started!");
             System.out.println("Connected!");
             System.out.println("Sending username to server...");
             name = nameField.getText();
@@ -117,12 +118,14 @@ public class MainMenu implements ActionListener {
             try {
                 while(!socket.isClosed()) {
                     String message = br.readLine();
+                    System.out.println(message);
                     if(message.equals("start")) {
                         frame.dispose();
                         clip.stop();
                         System.out.println("All players have joined!");
                         new PlayingScreen(socket, name);
                         System.out.println("PlayingScreen created");
+                        break;
                     }
                 }
             }

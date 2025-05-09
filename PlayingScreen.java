@@ -45,6 +45,7 @@ public class PlayingScreen implements ActionListener {
 
         Thread listenThread = new Thread(new ListenThread());
         listenThread.start();
+        System.out.println("ListenThread started");
 
         JFrame frame = new JFrame("Poker");
         white = new Color(199, 199, 204);
@@ -177,6 +178,7 @@ public class PlayingScreen implements ActionListener {
         public void run() {
             try{
                 while(!socket.isClosed()) {
+                    System.out.println("Waiting for packet from server (playing screen)");
                     String message = br.readLine();
                     System.out.println(message);
                     int playerNumber = Integer.parseInt(message.substring(message.length()-1));
