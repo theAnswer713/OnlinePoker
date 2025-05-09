@@ -6,12 +6,16 @@ import java.util.List;
 public class ClientListenThread implements Runnable {
     private Socket socket;
     private BufferedReader br;
+    private String name;
+    private MainMenu mainMenu;
     private List<Player> players;
 
-    public ClientListenThread(Socket socket) {
+    public ClientListenThread(Socket socket, String name, MainMenu mainMenu) {
         try {
             this.socket = socket;
             this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.name = name;
+            this.mainMenu = mainMenu;
         }
         catch(Exception err) {
             err.printStackTrace();
@@ -25,6 +29,8 @@ public class ClientListenThread implements Runnable {
                 System.out.println(message);
                 if(message.equals("start")) {
                     //put stuff to create playingScreen
+                    mainMenu.frame.dispose();
+                    new PlayingScreen(socket, name);
                 }
 
                 // once playingScreen is created

@@ -24,7 +24,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
 public class MainMenu implements ActionListener {
-    private JFrame frame;
+    public JFrame frame;
     private JTextField ipField, nameField;
     private JButton joinButton;
     private Clip clip;
@@ -97,17 +97,13 @@ public class MainMenu implements ActionListener {
             socket = new Socket(ipField.getText(), 55555);
             pw = new PrintWriter(socket.getOutputStream(), true);
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            //Thread listenThread = new Thread(new ListenThread());
-            //listenThread.start();
-
-            // put clientListenThread here??
-            new ClientListenThread(socket);
-
             System.out.println("ListenThread started!");
             System.out.println("Connected!");
             System.out.println("Sending username to server...");
             name = nameField.getText();
             pw.println(name);
+            // put clientListenThread here??
+            new ClientListenThread(socket, name, this);
             System.out.println(name);
             System.out.println("Username received by server!");
             System.out.println("Waiting for remaining players to join...");
