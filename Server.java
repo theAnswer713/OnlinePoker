@@ -39,27 +39,27 @@ public class Server {
         public void run() {
             try {
                 while(!server.isClosed()) {
-                    while(players.size()<4) {
-                        System.out.println("Waiting for players to join...");
-                        Socket socket = server.accept();
-                        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        String name = br.readLine();
-                        Player player = new Player(name, socket);
-                        players.add(player);
+                    System.out.println("Waiting for players to join...");
+                    Socket socket = server.accept();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    String name = br.readLine();
+                    Player player = new Player(name, socket);
+                    players.add(player);
+                    System.out.println(name+" has joined");
 
-                        Thread listenThread = new Thread(new ListenThread(player));
-                        listenThread.start();
-                    }
-                    System.out.println("All players have joined!");
+                    Thread listenThread = new Thread(new ListenThread(player));
+                    listenThread.start();
 
-                    for(Player player:players) {
-                        player.getPw().println("start");
+                    if(players.size() == 4) {
+                        System.out.println("All players have joined!");
+                        sendToPlayers("start");
+
+                        System.out.println("start");
+                        Thread infoThread = new Thread(new InfoThread());
+                        infoThread.start();
+                        System.out.println("InfoThread started");
+                        break;
                     }
-                    System.out.println("start");
-                    Thread infoThread = new Thread(new InfoThread());
-                    infoThread.start();
-                    System.out.println("InfoThread started");
-                    break;
                 }
             }
             catch(Exception err) {
@@ -80,9 +80,7 @@ public class Server {
                 while(!player.getSocket().isClosed()) {
                     String message = player.getBr().readLine();
                     System.out.println(message);
-                    for(Player x: players) {
-                        x.getPw().println(message);
-                    }
+                    sendToPlayers(message);
                 }
             }
             catch(Exception err) {
@@ -100,9 +98,7 @@ public class Server {
                 }
                 nameList = nameList.substring(0,nameList.length()-1);
                 System.out.println(nameList);
-                for(Player player:players) {
-                    player.getPw().println(nameList);
-                }
+                sendToPlayers(nameList);
 
                 deck = new Deck();
                 deck.shuffle();
@@ -147,6 +143,12 @@ public class Server {
             catch(Exception err) {
                 err.printStackTrace();
             }
+        }
+    }
+
+    public void sendToPlayers(String message) {
+        for(Player player:players) {
+            player.getPw().println(message);
         }
     }
 

@@ -102,11 +102,11 @@ public class MainMenu implements ActionListener {
             System.out.println("Sending username to server...");
             name = nameField.getText();
             pw.println(name);
-            // put clientListenThread here??
-            new ClientListenThread(socket, name, this);
+            Thread listenThread = new Thread(new ClientListenThread(socket, name, this));
+            listenThread.start();
+
             System.out.println(name);
             System.out.println("Username received by server!");
-            System.out.println("Waiting for remaining players to join...");
             joinButton.setText("Waiting for remaining players to join...");
         }
         catch(Exception err) {

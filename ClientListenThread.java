@@ -1,11 +1,13 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 
 public class ClientListenThread implements Runnable {
     private Socket socket;
     private BufferedReader br;
+    private PrintWriter pw;
     private String name;
     private MainMenu mainMenu;
     private List<Player> players;
@@ -14,6 +16,7 @@ public class ClientListenThread implements Runnable {
         try {
             this.socket = socket;
             this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.pw = new PrintWriter(socket.getOutputStream(), true);
             this.name = name;
             this.mainMenu = mainMenu;
         }
@@ -29,7 +32,6 @@ public class ClientListenThread implements Runnable {
                 System.out.println(message);
                 if(message.equals("start")) {
                     //stuff to create playingScreen
-
                     //these two below might need to be private with getter methods
                     mainMenu.frame.dispose();
                     mainMenu.clip.stop();
@@ -45,10 +47,10 @@ public class ClientListenThread implements Runnable {
                     players.get(playerNumber).fold();
                 }
                 if(message.startsWith("check")) {
-                    players.get(playerNumber).check(Integer.parseInt(message.substring(6))); //maybe create method for this
+                    players.get(playerNumber).check(Integer.parseInt(message.substring(6)));
                 }
                 if(message.startsWith("raise")) {
-                    players.get(playerNumber).raise(Integer.parseInt(message.substring(6))); //maybe create method for this
+                    players.get(playerNumber).raise(Integer.parseInt(message.substring(6)));
                 }
             }
         }

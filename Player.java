@@ -36,7 +36,7 @@ public class Player {
 
         this.socket = socket;
         this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.pw = new PrintWriter(socket.getOutputStream());
+        this.pw = new PrintWriter(socket.getOutputStream(), true);
     }
 
     public String getName() {
