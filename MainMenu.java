@@ -97,8 +97,8 @@ public class MainMenu implements ActionListener {
             socket = new Socket(ipField.getText(), 55542);
             pw = new PrintWriter(socket.getOutputStream(), true);
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            System.out.println("ListenThread started!");
             System.out.println("Connected!");
+            System.out.println("ListenThread started!");
             System.out.println("Sending username to server...");
             name = nameField.getText();
             pw.println(name);

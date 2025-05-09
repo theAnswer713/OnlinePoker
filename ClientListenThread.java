@@ -28,7 +28,7 @@ public class ClientListenThread implements Runnable {
                 String message = br.readLine();
                 System.out.println(message);
                 if(message.equals("start")) {
-                    //put stuff to create playingScreen
+                    //stuff to create playingScreen
 
                     //these two below might need to be private with getter methods
                     mainMenu.frame.dispose();
