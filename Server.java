@@ -21,7 +21,7 @@ public class Server {
     }
 
     public Server() throws Exception {
-        this.server = new ServerSocket(55555);
+        this.server = new ServerSocket(55542);
         this.players = new ArrayList<Player>();
         this.tableCards = new ArrayList<Card>();
         this.deck = new Deck();
