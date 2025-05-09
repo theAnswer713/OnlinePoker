@@ -43,8 +43,8 @@ public class PlayingScreen implements ActionListener {
             err.printStackTrace();
         }
 
-        Thread listenThread = new Thread(new ListenThread());
-        listenThread.start();
+        //Thread listenThread = new Thread(new ListenThread());
+        //listenThread.start();
         System.out.println("ListenThread started");
 
         JFrame frame = new JFrame("Poker");
