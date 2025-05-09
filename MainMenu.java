@@ -104,6 +104,7 @@ public class MainMenu implements ActionListener {
             System.out.println("Sending username to server...");
             name = nameField.getText();
             pw.println(name);
+            System.out.println(name);
             System.out.println("Username received by server!");
             System.out.println("Waiting for remaining players to join...");
             joinButton.setText("Waiting for remaining players to join...");
@@ -125,7 +126,6 @@ public class MainMenu implements ActionListener {
                         System.out.println("All players have joined!");
                         new PlayingScreen(socket, name);
                         System.out.println("PlayingScreen created");
-                        break;
                     }
                 }
             }
