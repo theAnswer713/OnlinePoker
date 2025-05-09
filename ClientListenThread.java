@@ -29,8 +29,14 @@ public class ClientListenThread implements Runnable {
                 System.out.println(message);
                 if(message.equals("start")) {
                     //put stuff to create playingScreen
+
+                    //these two below might need to be private with getter methods
                     mainMenu.frame.dispose();
+                    mainMenu.clip.stop();
+
+                    System.out.println("All players have joined!");
                     new PlayingScreen(socket, name);
+                    System.out.println("Playing screen created");
                 }
 
                 // once playingScreen is created

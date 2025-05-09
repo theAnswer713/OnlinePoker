@@ -27,7 +27,7 @@ public class MainMenu implements ActionListener {
     public JFrame frame;
     private JTextField ipField, nameField;
     private JButton joinButton;
-    private Clip clip;
+    public Clip clip;
     private BufferedReader br;
     private PrintWriter pw;
     private Socket socket;
