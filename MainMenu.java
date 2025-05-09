@@ -94,7 +94,7 @@ public class MainMenu implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         try {
             System.out.println("Trying to connect...");
-            socket = new Socket(ipField.getText(), 55555);
+            socket = new Socket(ipField.getText(), 55542);
             pw = new PrintWriter(socket.getOutputStream(), true);
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             System.out.println("ListenThread started!");
