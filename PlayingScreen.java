@@ -53,23 +53,25 @@ public class PlayingScreen implements ActionListener {
         String[] playerNames = playerList.split("/");
         players = new ArrayList<Player>();
 
+
+        //might want to move setHole() to later spot after initializing players
         Player p1 = new Player(playerNames[0]);
-        p1.setHole(br.readLine());
+        //p1.setHole(br.readLine());
         players.add(p1);
         System.out.println("Player 1: "+p1.getName());
 
         Player p2 = new Player(playerNames[1]);
-        p2.setHole(br.readLine());
+        //p2.setHole(br.readLine());
         players.add(p2);
         System.out.println("Player 2: "+p2.getName());
 
         Player p3 = new Player(playerNames[2]);
-        p3.setHole(br.readLine());
+        //p3.setHole(br.readLine());
         players.add(p3);
         System.out.println("Player 3: "+p3.getName());
 
         Player p4 = new Player(playerNames[3]);
-        p4.setHole(br.readLine());
+        //p4.setHole(br.readLine());
         players.add(p4);
         System.out.println("Player 4: "+p4.getName());
 
