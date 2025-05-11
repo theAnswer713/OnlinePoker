@@ -182,21 +182,15 @@ public class Server {
                         if(players.get(i).isFolded()) {
                             System.out.println(players.get(i).getName()+" has folded");
                         }
-                        for(Player player:players) {
-                            player.getPw().println("fold"+i);
-                        }
+                        sendToPlayers("fold"+i);
                     }
                     else if(move.startsWith("check")) {
-                        for(Player player:players) {
-                            player.getPw().println("check"+highest+i);
-                        }
+                        sendToPlayers("check"+highest+i);
                     }
                     else if(move.startsWith("raise")) {
                         int amount = Integer.parseInt(move.substring(9));
                         System.out.println(amount);
-                        for(Player player:players) {
-                            player.getPw().println("raise"+amount+i);
-                        }
+                        sendToPlayers("raise"+amount+i);
                     }
 
                     //does the below section need to be in if(move.startsWith("raise:))?

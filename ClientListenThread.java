@@ -44,6 +44,7 @@ public class ClientListenThread implements Runnable {
                 // once playingScreen is created
                 while(!socket.isClosed()) {
                     message = br.readLine();
+                    System.out.println(message);
                     int playerNumber = Integer.parseInt(message.substring(message.length() - 1));
                     message = message.substring(0, message.length()-1);
                     if (message.startsWith("fold")) {
