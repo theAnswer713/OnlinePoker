@@ -101,12 +101,13 @@ public class MainMenu implements ActionListener {
             System.out.println("ListenThread started!");
             System.out.println("Sending username to server...");
             name = nameField.getText();
+            System.out.println(name);
             pw.println(name);
+            System.out.println("Username received by server!");
+
             Thread listenThread = new Thread(new ClientListenThread(socket, name, this));
             listenThread.start();
 
-            System.out.println(name);
-            System.out.println("Username received by server!");
             joinButton.setText("Waiting for remaining players to join...");
         }
         catch(Exception err) {
@@ -137,7 +138,7 @@ public class MainMenu implements ActionListener {
 
     public void playSound() {
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("sounds\\StartScreen.wav").getAbsoluteFile());
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(System.getProperty("user.dir")+"\\StartScreen.wav"));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
