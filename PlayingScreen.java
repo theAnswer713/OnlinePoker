@@ -224,7 +224,7 @@ public class PlayingScreen implements ActionListener {
 
     public void playSound() {
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("sounds\\Noir Noises.wav").getAbsoluteFile());
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(System.getProperty("user.dir")+"//NoirNoises.wav"));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
@@ -246,7 +246,7 @@ public class PlayingScreen implements ActionListener {
             if(value == 14) {
                 value = 1;
             }
-            String path = System.getProperty("user.dir")+"\\"+x.getSuit()+value+".png";
+            String path = System.getProperty("user.dir")+"//"+x.getSuit()+value+".png";
             ImageIcon icon = new ImageIcon(path);
             image.setIcon(icon);
             table.add(image);
@@ -273,7 +273,7 @@ public class PlayingScreen implements ActionListener {
             money.setForeground(white);
 
             JLabel image = new JLabel();
-            String path = System.getProperty("user.dir")+"\\person.png";
+            String path = System.getProperty("user.dir")+"//person.png";
             ImageIcon icon = new ImageIcon(path);
             image.setIcon(icon);
             c.gridheight = 2;
@@ -294,7 +294,7 @@ public class PlayingScreen implements ActionListener {
             money.setForeground(white);
 
             JLabel image = new JLabel();
-            String path = System.getProperty("user.dir")+"\\person.png";
+            String path = System.getProperty("user.dir")+"//person.png";
             ImageIcon icon = new ImageIcon(path);
             image.setIcon(icon);
             c.gridheight = 2;
