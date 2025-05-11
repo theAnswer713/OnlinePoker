@@ -177,21 +177,25 @@ public class Server {
                     //amount is standin for however much is bet
                     //yay networking go luca
                     String move = players.get(i).getBr().readLine();
-                    if(move.equals("fold")) {
+                    if(move.startsWith("fold")) {
                         players.get(i).fold();
+                        if(players.get(i).isFolded()) {
+                            System.out.println(players.get(i).getName()+" has folded");
+                        }
                         for(Player player:players) {
-                            player.getPw().println("fold"+i);
+                            player.getPw().println(move);
                         }
                     }
-                    if(move.equals("check")) {
+                    else if(move.startsWith("check")) {
                         for(Player player:players) {
-                            player.getPw().println("check"+i+highest);
+                            player.getPw().println(move+highest);
                         }
                     }
-                    if(move.startsWith("raise")) {
-                        int amount = Integer.parseInt(move.substring(6));
+                    else if(move.startsWith("raise")) {
+                        int amount = Integer.parseInt(move.substring(9));
+                        System.out.println(amount);
                         for(Player player:players) {
-                            player.getPw().println("raise"+i+amount);
+                            player.getPw().println(move+amount);
                         }
                     }
 

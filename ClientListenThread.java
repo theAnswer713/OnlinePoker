@@ -42,15 +42,18 @@ public class ClientListenThread implements Runnable {
                 }
 
                 // once playingScreen is created
-                int playerNumber = Integer.parseInt(message.substring(message.length()-1));
-                if(message.startsWith("fold")) {
-                    players.get(playerNumber).fold();
-                }
-                if(message.startsWith("check")) {
-                    players.get(playerNumber).check(Integer.parseInt(message.substring(6)));
-                }
-                if(message.startsWith("raise")) {
-                    players.get(playerNumber).raise(Integer.parseInt(message.substring(6)));
+                while(!socket.isClosed()) {
+                    message = br.readLine();
+                    int playerNumber = Integer.parseInt(message.substring(message.length() - 1));
+                    if (message.startsWith("fold")) {
+                        players.get(playerNumber).fold();
+                    }
+                    if (message.startsWith("check")) {
+                        players.get(playerNumber).check(Integer.parseInt(message.substring(6)));
+                    }
+                    if (message.startsWith("raise")) {
+                        players.get(playerNumber).raise(Integer.parseInt(message.substring(6)));
+                    }
                 }
             }
         }

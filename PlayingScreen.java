@@ -208,13 +208,13 @@ public class PlayingScreen implements ActionListener {
         try{
             if(e.getSource() == foldButton) {
                 players.get(turnNumber).fold();
-                pw.println("fold");
+                pw.println("fold ("+turnNumber+")");
             }
             if(e.getSource() == checkButton) {
-                pw.println("check");
+                pw.println("check ("+turnNumber+")");
             }
             if(e.getSource() == raiseButton) {
-                pw.println("raise"+amountField.getText());
+                pw.println("raise ("+turnNumber+") "+amountField.getText());
             }
         }
         catch(Exception err) {
