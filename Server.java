@@ -183,19 +183,19 @@ public class Server {
                             System.out.println(players.get(i).getName()+" has folded");
                         }
                         for(Player player:players) {
-                            player.getPw().println(move);
+                            player.getPw().println("fold"+i);
                         }
                     }
                     else if(move.startsWith("check")) {
                         for(Player player:players) {
-                            player.getPw().println(move+highest);
+                            player.getPw().println("check"+highest+i);
                         }
                     }
                     else if(move.startsWith("raise")) {
                         int amount = Integer.parseInt(move.substring(9));
                         System.out.println(amount);
                         for(Player player:players) {
-                            player.getPw().println(move+amount);
+                            player.getPw().println("raise"+amount+i);
                         }
                     }
 
