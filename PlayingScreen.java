@@ -43,38 +43,40 @@ public class PlayingScreen implements ActionListener {
             err.printStackTrace();
         }
 
-        //Thread listenThread = new Thread(new ListenThread());
-        //listenThread.start();
-        System.out.println("ListenThread started");
-
         JFrame frame = new JFrame("Poker");
         white = new Color(199, 199, 204);
         green = new Color(25, 70, 26);
         brown = new Color(50, 37, 12);
         //have server send playerList
         String playerList = br.readLine();
+        System.out.println(playerList);
         String[] playerNames = playerList.split("/");
         players = new ArrayList<Player>();
 
         Player p1 = new Player(playerNames[0]);
         p1.setHole(br.readLine());
         players.add(p1);
+        System.out.println("Player 1: "+p1.getName());
 
         Player p2 = new Player(playerNames[1]);
         p2.setHole(br.readLine());
         players.add(p2);
+        System.out.println("Player 2: "+p2.getName());
 
         Player p3 = new Player(playerNames[2]);
         p3.setHole(br.readLine());
         players.add(p3);
+        System.out.println("Player 3: "+p3.getName());
 
         Player p4 = new Player(playerNames[3]);
         p4.setHole(br.readLine());
         players.add(p4);
+        System.out.println("Player 4: "+p4.getName());
 
         for(int i=0; i<playerNames.length; i++) {
             if(playerNames[i].equals(name)) {
                 turnNumber = i;
+                System.out.println("Turn number: "+turnNumber);
             }
         }
 
