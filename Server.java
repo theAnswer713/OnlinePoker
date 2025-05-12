@@ -47,8 +47,8 @@ public class Server {
                     players.add(player);
                     System.out.println(name+" has joined");
 
-                    Thread listenThread = new Thread(new ListenThread(player));
-                    listenThread.start();
+                    //Thread listenThread = new Thread(new ListenThread(player));
+                    //listenThread.start();
 
                     if(players.size() == 4) {
                         System.out.println("All players have joined!");
@@ -177,20 +177,22 @@ public class Server {
                     //amount is standin for however much is bet
                     //yay networking go luca
                     String move = players.get(i).getBr().readLine();
+                    System.out.println(move);
                     if(move.startsWith("fold")) {
                         players.get(i).fold();
                         if(players.get(i).isFolded()) {
                             System.out.println(players.get(i).getName()+" has folded");
                         }
-                        sendToPlayers("fold"+i);
+                        sendToPlayers(move);
                     }
                     else if(move.startsWith("check")) {
                         sendToPlayers("check"+highest+i);
                     }
                     else if(move.startsWith("raise")) {
-                        int amount = Integer.parseInt(move.substring(9));
-                        System.out.println(amount);
-                        sendToPlayers("raise"+amount+i);
+                        move = move.substring(0, move.length()-1);
+                        int amount = Integer.parseInt(move.substring(5));
+                        System.out.println("Amount raised: "+amount);
+                        sendToPlayers(move);
                     }
 
                     //does the below section need to be in if(move.startsWith("raise:))?
