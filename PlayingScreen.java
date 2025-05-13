@@ -153,7 +153,7 @@ public class PlayingScreen implements ActionListener {
         raiseButton.addActionListener(this);
         buttons.add(raiseButton);
 
-        amountField = new JTextField(1);
+        amountField = new JTextField(10);
         buttons.add(amountField);
 
         //create buttons that appear under certain conditions
