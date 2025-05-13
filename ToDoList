@@ -1,0 +1,9 @@
+figure out how to create a method that will let the ClientListenThread access the players ArrayList from PlayingScreen
+- this way it can be modified when the the listen thread receives a check, fold, raise message
+
+figure out how to constantly update player info on the playing screen
+
+finish output sentence in ClientListenThread for when a move is received
+
+make sure bet method logic works correctly
+- make sure game skips to end if everyone is folded even if bet() is called - for Jonathan

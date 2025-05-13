@@ -47,7 +47,11 @@ public class ClientListenThread implements Runnable {
                     System.out.println(message);
                     int playerNumber = Integer.parseInt(message.substring(message.length() - 1));
                     message = message.substring(0, message.length()-1);
+
+                    //need to finish this line with "folded", "checked", or "raised __ (insert amount)"
+                    System.out.println("Turn "+playerNumber+": "+players.get(playerNumber).getName()+" has ");
                     if (message.startsWith("fold")) {
+                        //PlayingScreen.players.get(playerNumber).fold(); do this for the other two but find how to call it
                         players.get(playerNumber).fold();
                     }
                     if (message.startsWith("check")) {

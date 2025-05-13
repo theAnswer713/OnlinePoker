@@ -25,7 +25,7 @@ public class PlayingScreen implements ActionListener {
     private String name;
     private BufferedReader br;
     private PrintWriter pw;
-    private ArrayList<Player> players;
+    public ArrayList<Player> players;
     private int turnNumber;
     private Color green, white, brown;
     private JButton foldButton, checkButton, raiseButton;
@@ -304,5 +304,10 @@ public class PlayingScreen implements ActionListener {
         }
         panel.setBackground(green);
         return panel;
+    }
+
+    // how do I call this??
+    public ArrayList<Player> getPlayers() {
+        return players;
     }
 }
