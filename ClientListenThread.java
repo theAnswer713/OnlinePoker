@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClientListenThread implements Runnable {
@@ -10,7 +11,7 @@ public class ClientListenThread implements Runnable {
     private PrintWriter pw;
     private String name;
     private MainMenu mainMenu;
-    private List<Player> players;
+    private ArrayList<Player> players;
 
     public ClientListenThread(Socket socket, String name, MainMenu mainMenu) {
         try {
@@ -66,5 +67,17 @@ public class ClientListenThread implements Runnable {
         catch(Exception err) {
             err.printStackTrace();
         }
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+
+    public void setPlayers(int index, int balance) {
+        players.get(index).setMoney(balance);
     }
 }

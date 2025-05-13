@@ -178,6 +178,7 @@ public class PlayingScreen implements ActionListener {
     //so for instance, pushing check sends "check", raise sends # amount
     //fold sends "fold"
 
+    /**
     private class ListenThread implements Runnable {
         public void run() {
             try{
@@ -203,6 +204,7 @@ public class PlayingScreen implements ActionListener {
             }
         }
     }
+     **/
 
     public void actionPerformed(ActionEvent e) {
         try{
