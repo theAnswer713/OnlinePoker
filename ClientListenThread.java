@@ -40,10 +40,9 @@ public class ClientListenThread implements Runnable {
                     System.out.println("All players have joined!");
                     new PlayingScreen(socket, name);
                     System.out.println("Playing screen created");
-                }
 
-                // once playingScreen is created
-                while(!socket.isClosed()) {
+
+                    // once playingScreen is created
                     message = br.readLine();
                     System.out.println(message);
                     int playerNumber = Integer.parseInt(message.substring(message.length() - 1));
