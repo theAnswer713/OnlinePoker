@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -10,29 +11,26 @@ import java.util.ArrayList;
 //if(debugging) System.out.println(sending, receiving, etc)
 
 import java.io.File;
-import java.io.IOException;
 
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine.Info;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import static javax.sound.sampled.AudioSystem.getAudioInputStream;
-import static javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 
-public class PlayingScreen {
+import javax.sound.sampled.Clip;
+import javax.swing.border.Border;
+
+public class PlayingScreen implements ActionListener {
     private Socket socket;
     private String name;
     private BufferedReader br;
     private PrintWriter pw;
+    public ArrayList<Player> players;
     private int turnNumber;
     private Color green, white, brown;
+    private JButton foldButton, checkButton, raiseButton;
+    private JTextField amountField;
+    private Clip clip;
 
     public PlayingScreen(Socket socket, String name) throws Exception {
         try {
@@ -46,19 +44,41 @@ public class PlayingScreen {
         }
 
         JFrame frame = new JFrame("Poker");
-        green = new Color(25, 70, 26);
         white = new Color(199, 199, 204);
+        green = new Color(25, 70, 26);
         brown = new Color(50, 37, 12);
         //have server send playerList
         String playerList = br.readLine();
+        System.out.println(playerList);
         String[] playerNames = playerList.split("/");
+        players = new ArrayList<Player>();
+
+
+        //might want to move setHole() to later spot after initializing players
         Player p1 = new Player(playerNames[0]);
+        //p1.setHole(br.readLine());
+        players.add(p1);
+        System.out.println("Player 1: "+p1.getName());
+
         Player p2 = new Player(playerNames[1]);
+        //p2.setHole(br.readLine());
+        players.add(p2);
+        System.out.println("Player 2: "+p2.getName());
+
         Player p3 = new Player(playerNames[2]);
+        //p3.setHole(br.readLine());
+        players.add(p3);
+        System.out.println("Player 3: "+p3.getName());
+
         Player p4 = new Player(playerNames[3]);
+        //p4.setHole(br.readLine());
+        players.add(p4);
+        System.out.println("Player 4: "+p4.getName());
+
         for(int i=0; i<playerNames.length; i++) {
             if(playerNames[i].equals(name)) {
-                turnNumber = i+1;
+                turnNumber = i;
+                System.out.println("Turn number: "+turnNumber);
             }
         }
 
@@ -92,26 +112,65 @@ public class PlayingScreen {
         c.gridx = 2;
         c.gridy = 0;
         JPanel dealer = new JPanel();
+        centerPanel.add(dealer);
 
         c.gridheight = 4;
         c.gridy = 1;
-        JPanel table = Table();
+        JPanel table = Table(new ArrayList<Card>());
+        //this will need to have cards from hand - cards in hole
+        centerPanel.add(table); //send it the cards on the table
+
+        c.gridheight = 1;
+        c.gridy = 5;
+        JPanel handPanel = new JPanel();
+        handPanel.setLayout(new FlowLayout());
+        for(Card x:players.get(turnNumber).getHole()) {
+            JLabel image = new JLabel();
+            int value = x.getValue();
+            if(value == 14) {
+                value = 1;
+            }
+            String path = System.getProperty("user.dir")+"\\"+x.getSuit()+value+".png";
+            ImageIcon icon = new ImageIcon(path);
+            image.setIcon(icon);
+            handPanel.add(image);
+        }
+        centerPanel.add(handPanel);
 
         //update all of these panels
 
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new GridBagLayout());
-        //where the action buttons are and player's cards
+        JPanel buttons = new JPanel();
+        buttons.setLayout(new FlowLayout());
+        foldButton = new JButton("FOLD");
+        foldButton.addActionListener(this);
+        buttons.add(foldButton);
+
+        checkButton = new JButton("CHECK");
+        checkButton.addActionListener(this);
+        buttons.add(checkButton);
+
+        raiseButton = new JButton("RAISE");
+        raiseButton.addActionListener(this);
+        buttons.add(raiseButton);
+
+        amountField = new JTextField(10);
+        buttons.add(amountField);
 
         //create buttons that appear under certain conditions
         //make buttons have functions that send certain messages
         //code the messages to start with unique identifiers
         //determine what those identifiers will be
 
+        frame.setBackground(green);
+        frame.setLayout(new BorderLayout());
         frame.add(centerPanel, BorderLayout.CENTER);
-        frame.add(bottomPanel, BorderLayout.SOUTH);
+        frame.add(buttons, BorderLayout.SOUTH);
 
-
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        playSound();
     }
 
     //in actionperformed (i think)
@@ -119,11 +178,25 @@ public class PlayingScreen {
     //so for instance, pushing check sends "check", raise sends # amount
     //fold sends "fold"
 
+    /**
     private class ListenThread implements Runnable {
         public void run() {
             try{
                 while(!socket.isClosed()) {
-
+                    System.out.println("Waiting for packet from server (playing screen)");
+                    String message = br.readLine();
+                    System.out.println(message);
+                    int playerNumber = Integer.parseInt(message.substring(message.length()-1));
+                    if(message.startsWith("fold")) {
+                        players.get(playerNumber).fold();
+                    }
+                    if(message.startsWith("check")) {
+                        players.get(playerNumber).check(Integer.parseInt(message.substring(6))); //maybe create method for this
+                    }
+                    if(message.startsWith("raise")) {
+                        players.get(playerNumber).raise(Integer.parseInt(message.substring(6))); //maybe create method for this
+                    }
+                    //add for other buttons
                 }
             }
             catch(Exception err) {
@@ -131,11 +204,30 @@ public class PlayingScreen {
             }
         }
     }
+     **/
+
+    public void actionPerformed(ActionEvent e) {
+        try{
+            if(e.getSource() == foldButton) {
+                players.get(turnNumber).fold();
+                pw.println("fold"+turnNumber);
+            }
+            if(e.getSource() == checkButton) {
+                pw.println("check"+turnNumber);
+            }
+            if(e.getSource() == raiseButton) {
+                pw.println("raise"+amountField.getText()+turnNumber);
+            }
+        }
+        catch(Exception err) {
+            err.printStackTrace();
+        }
+    }
 
     public void playSound() {
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("Noir Noises.wav").getAbsoluteFile());
-            Clip clip = AudioSystem.getClip();
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(System.getProperty("user.dir")+"//NoirNoises.wav"));
+            clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
@@ -145,11 +237,23 @@ public class PlayingScreen {
         }
     }
 
-    public JPanel Table() {
-        //add ArrayList<Card> to constructor
+    public JPanel Table(ArrayList<Card> tableCards) {
         JPanel table = new JPanel();
         table.setLayout(new FlowLayout());
         table.setBackground(brown);
+
+        for(Card x:tableCards) {
+            JLabel image = new JLabel();
+            int value = x.getValue();
+            if(value == 14) {
+                value = 1;
+            }
+            String path = System.getProperty("user.dir")+"//"+x.getSuit()+value+".png";
+            ImageIcon icon = new ImageIcon(path);
+            image.setIcon(icon);
+            table.add(image);
+        }
+
         return table;
     }
 
@@ -171,7 +275,7 @@ public class PlayingScreen {
             money.setForeground(white);
 
             JLabel image = new JLabel();
-            String path = System.getProperty("user.dir")+"\\person.png";
+            String path = System.getProperty("user.dir")+"//person.png";
             ImageIcon icon = new ImageIcon(path);
             image.setIcon(icon);
             c.gridheight = 2;
@@ -192,7 +296,7 @@ public class PlayingScreen {
             money.setForeground(white);
 
             JLabel image = new JLabel();
-            String path = System.getProperty("user.dir")+"\\person.png";
+            String path = System.getProperty("user.dir")+"//person.png";
             ImageIcon icon = new ImageIcon(path);
             image.setIcon(icon);
             c.gridheight = 2;
@@ -202,5 +306,10 @@ public class PlayingScreen {
         }
         panel.setBackground(green);
         return panel;
+    }
+
+    // how do I call this??
+    public ArrayList<Player> getPlayers() {
+        return players;
     }
 }

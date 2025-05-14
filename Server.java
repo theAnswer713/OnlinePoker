@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class Server {
     private ServerSocket server;
     private List<Player> players;
+    private List<Card> tableCards;
     private Deck deck;
     private HashMap<String, Integer> hands;
     private HashMap<String, Integer> highBets;
@@ -20,8 +21,9 @@ public class Server {
     }
 
     public Server() throws Exception {
-        this.server = new ServerSocket(55555);
+        this.server = new ServerSocket(55542);
         this.players = new ArrayList<Player>();
+        this.tableCards = new ArrayList<Card>();
         this.deck = new Deck();
         this.hands = new HashMap();
         this.highBets = new HashMap();
@@ -35,30 +37,29 @@ public class Server {
 
     private class AcceptThread implements Runnable {
         public void run() {
-            String nameList = "";
             try {
                 while(!server.isClosed()) {
-                    while(players.size()<4) {
-                        System.out.println("Waiting for players to join...");
-                        Socket socket = server.accept();
-                        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        String name = br.readLine();
-                        nameList += name+"/";
-                        Player player = new Player(name, socket);
-                        players.add(player);
+                    System.out.println("Waiting for players to join...");
+                    Socket socket = server.accept();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    String name = br.readLine();
+                    Player player = new Player(name, socket);
+                    players.add(player);
+                    System.out.println(name+" has joined");
 
-                        Thread listenThread = new Thread(new ListenThread(player));
-                        listenThread.start();
+                    //Thread listenThread = new Thread(new ListenThread(player));
+                    //listenThread.start();
+
+                    if(players.size() == 4) {
+                        System.out.println("All players have joined!");
+                        sendToPlayers("start");
+
+                        System.out.println("start");
+                        Thread infoThread = new Thread(new InfoThread());
+                        infoThread.start();
+                        System.out.println("InfoThread started");
+                        break;
                     }
-                    System.out.println("All players have joined!");
-                    nameList = nameList.substring(0, nameList.length()-1);
-                    for(Player x:players) {
-                        x.getPw().println("start");
-                        x.getPw().println(nameList);
-                    }
-                    Thread gameThread = new Thread(new GameThread());
-                    gameThread.start();
-                    Thread.currentThread().interrupt();
                 }
             }
             catch(Exception err) {
@@ -79,10 +80,42 @@ public class Server {
                 while(!player.getSocket().isClosed()) {
                     String message = player.getBr().readLine();
                     System.out.println(message);
-                    for(Player x: players) {
-                        x.getPw().println(message);
-                    }
+                    sendToPlayers(message);
                 }
+            }
+            catch(Exception err) {
+                err.printStackTrace();
+            }
+        }
+    }
+
+    private class InfoThread implements Runnable {
+        public void run() {
+            try {
+                String nameList = "";
+                for(Player player:players) {
+                    nameList+=player.getName()+"/";
+                }
+                nameList = nameList.substring(0,nameList.length()-1);
+                System.out.println(nameList);
+                sendToPlayers(nameList);
+
+                deck = new Deck();
+                deck.shuffle();
+                System.out.println("Shuffling complete. Number of cards: "+deck.getDeck().size());
+                deal();
+
+                //tells people what their cards are
+                for (int i = 0; i < players.size(); i++) {
+                        Card c1 = players.get(i).getHole().get(0);
+                        Card c2 = players.get(i).getHole().get(1);
+                        String cardNames = c1.getSuit() + c1.getValue() + "/" + c2.getSuit() + c2.getValue();
+                        players.get(i).getPw().println(cardNames);
+                        System.out.println(cardNames);
+                    }
+                Thread gameThread = new Thread(new GameThread());
+                gameThread.start();
+                System.out.println("GameThread started");
             }
             catch(Exception err) {
                 err.printStackTrace();
@@ -92,22 +125,30 @@ public class Server {
 
     private class GameThread implements Runnable {
         public void run() {
-            for(Player player:players) {
-                bets.put(player.getName(), 0);
+            try {
+                //sets everyone's bets to 0
+                for (Player player : players) {
+                    bets.put(player.getName(), 0);
+                }
+                bet();
+                flop();
+                bet();
+                turn();
+                bet();
+                turn();
+                bet();
+                compare();
+                distribute();
             }
-            for(int i=0; i<10; i++) {
-                deck.Shuffle();
+            catch(Exception err) {
+                err.printStackTrace();
             }
-            deal();
-            bet();
-            flop();
-            bet();
-            turn();
-            bet();
-            turn();
-            bet();
-            compare();
-            distribute();
+        }
+    }
+
+    public void sendToPlayers(String message) {
+        for(Player player:players) {
+            player.getPw().println(message);
         }
     }
 
@@ -117,10 +158,11 @@ public class Server {
                 player.getHole().add(deck.dealCard());
                 player.getHand().add(player.getHole().get(i));
             }
+
         }
     }
 
-    public void bet() {
+    public void bet() throws Exception {
         //fold, check, call, raise
         //if fold, set boolean false for player
         for (Player player : players) {
@@ -134,6 +176,26 @@ public class Server {
                     //open options to player
                     //amount is standin for however much is bet
                     //yay networking go luca
+                    String move = players.get(i).getBr().readLine();
+                    System.out.println(move);
+                    if(move.startsWith("fold")) {
+                        players.get(i).fold();
+                        if(players.get(i).isFolded()) {
+                            System.out.println(players.get(i).getName()+" has folded");
+                        }
+                        sendToPlayers(move);
+                    }
+                    else if(move.startsWith("check")) {
+                        sendToPlayers("check"+highest+i);
+                    }
+                    else if(move.startsWith("raise")) {
+                        move = move.substring(0, move.length()-1);
+                        int amount = Integer.parseInt(move.substring(5));
+                        System.out.println("Amount raised: "+amount);
+                        sendToPlayers(move);
+                    }
+
+                    //does the below section need to be in if(move.startsWith("raise:))?
                     int amount = 0;
                     bets.put(players.get(i).getName(), amount);
                     if(amount > highBets.get(players.get(i).getName())) {
@@ -154,20 +216,26 @@ public class Server {
     }
 
     public void flop() {
-        ArrayList<Card> flop = new ArrayList<Card>();
+        String message = "Cards dealt: ";
         for(int i=0; i<3; i++) {
-            flop.add(deck.dealCard());
+            Card card = deck.dealCard();
+            message += card.getSuit()+card.getValue()+"/";
+            tableCards.add(card);
             for (Player player : players) {
-                player.getHand().add(flop.get(i));
+                player.getHand().add(tableCards.get(i));
             }
         }
+        sendToPlayers(message);
     }
 
     public void turn() {
         Card turn = deck.dealCard();
+        tableCards.add(turn);
         for (Player player : players) {
             player.getHand().add(turn);
         }
+        String message = "Card dealt: "+turn.getSuit()+turn.getValue();
+        sendToPlayers(message);
     }
 
     public void compare() {

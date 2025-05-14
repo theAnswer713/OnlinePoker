@@ -1,0 +1,20 @@
+public void riffleShuffle() {
+        //code it, fool
+        Random rand = new Random();
+        Stack<Card> left = new Stack<Card>();
+        Stack<Card> right = new Stack<Card>();
+        int half = deck.size()/2;
+        for(int i=0; i<half; i++) {left.push(deck.pop());}
+        while(deck.size()>0) {right.push(deck.pop());}
+        while (left.size()>0 || right.size()>0) {
+            int num = rand.nextInt(3)+1;
+            if (left.size()<num) {num = left.size();}
+            for (int i=0; i<num; i++) {
+                deck.push(left.pop());
+            }
+            if (right.size()<num) {num = right.size();}
+            for (int i=0; i<num; i++) {
+                deck.push(right.pop());
+            }
+        }
+    }

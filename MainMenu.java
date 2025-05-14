@@ -2,10 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.io.File;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -22,9 +24,14 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
 public class MainMenu implements ActionListener {
-    private JFrame frame;
+    public JFrame frame;
     private JTextField ipField, nameField;
     private JButton joinButton;
+    public Clip clip;
+    private BufferedReader br;
+    private PrintWriter pw;
+    private Socket socket;
+    private String name;
 
     public MainMenu() {
         frame = new JFrame("Poker");
@@ -79,38 +86,59 @@ public class MainMenu implements ActionListener {
         frame.setLocationRelativeTo(null);
         frame.setSize(1200, 800);
         frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        playSound();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
             System.out.println("Trying to connect...");
-            Socket socket = new Socket(ipField.getText(),55555);
+            socket = new Socket(ipField.getText(), 55542);
+            pw = new PrintWriter(socket.getOutputStream(), true);
+            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             System.out.println("Connected!");
-            PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
             System.out.println("Sending username to server...");
-            String name = nameField.getText();
+            name = nameField.getText();
+            System.out.println(name);
             pw.println(name);
             System.out.println("Username received by server!");
-            System.out.println("Waiting for remaining players to join...");
+
+            Thread listenThread = new Thread(new ClientListenThread(socket, name, this));
+            listenThread.start();
+
             joinButton.setText("Waiting for remaining players to join...");
-            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String message = br.readLine();
-            System.out.println(message);  //for debugging purposes
-            if(message.equals("start")) {
-                frame.dispose();
-                new PlayingScreen(socket, name);
-            }
         }
         catch(Exception err) {
             err.printStackTrace();
         }
     }
 
+    private class ListenThread implements Runnable {
+        public void run() {
+            try {
+                while(!socket.isClosed()) {
+                    String message = br.readLine();
+                    System.out.println(message);
+                    if(message.equals("start")) {
+                        frame.dispose();
+                        clip.stop();
+                        System.out.println("All players have joined!");
+                        new PlayingScreen(socket, name);
+                        System.out.println("PlayingScreen created");
+                    }
+                }
+            }
+            catch(Exception err) {
+                err.printStackTrace();
+            }
+        }
+    }
+
     public void playSound() {
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("StartScreen.wav").getAbsoluteFile());
-            Clip clip = AudioSystem.getClip();
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(System.getProperty("user.dir")+"//StartScreen.wav"));
+            clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
