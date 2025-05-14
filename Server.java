@@ -216,12 +216,16 @@ public class Server {
     }
 
     public void flop() {
+        String message = "Cards dealt: ";
         for(int i=0; i<3; i++) {
-            tableCards.add(deck.dealCard());
+            Card card = deck.dealCard();
+            message += card.getSuit()+card.getValue()+"/";
+            tableCards.add(card);
             for (Player player : players) {
                 player.getHand().add(tableCards.get(i));
             }
         }
+        sendToPlayers(message);
     }
 
     public void turn() {
@@ -230,6 +234,8 @@ public class Server {
         for (Player player : players) {
             player.getHand().add(turn);
         }
+        String message = "Card dealt: "+turn.getSuit()+turn.getValue();
+        sendToPlayers(message);
     }
 
     public void compare() {
