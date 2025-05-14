@@ -131,14 +131,24 @@ public class Server {
                     bets.put(player.getName(), 0);
                 }
                 bet();
+                System.out.println("First bet happened");
                 flop();
+                System.out.println("Flop happened");
                 bet();
+                System.out.println("Second bet happened");
                 turn();
+                System.out.println("Card dealt");
                 bet();
+                System.out.println("Third bet happened");
                 turn();
+                System.out.println("Card dealt");
                 bet();
+                System.out.println("Fourth bet happened");
                 compare();
+                System.out.println("Hands compared");
                 distribute();
+                System.out.println("Money distributed");
+                System.out.println(bestHand().get(0)+" won!");
             }
             catch(Exception err) {
                 err.printStackTrace();
@@ -225,6 +235,8 @@ public class Server {
                 player.getHand().add(tableCards.get(i));
             }
         }
+        message = message.substring(0,message.length()-1);
+        System.out.println(message);
         sendToPlayers(message);
     }
 
@@ -235,6 +247,7 @@ public class Server {
             player.getHand().add(turn);
         }
         String message = "Card dealt: "+turn.getSuit()+turn.getValue();
+        System.out.println(message);
         sendToPlayers(message);
     }
 
